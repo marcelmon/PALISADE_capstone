@@ -83,9 +83,15 @@ std::vector<tuple<BytePlaintextEncoding,IntPlaintextEncoding>> getEncodedPlainte
 int main(int argc, char *argv[]) {
 
 	
+	std::cout << "\nChoose parameter set: ";
+	CryptoContextHelper::printAllParmSetNames(std::cout);
+
+	string input;
+	std::cin >> input;
+
 
 	// StSt6 uses plaintext modulus of 256
-	string input = "FV2";
+	// string input = "FV2"; <<<<
 
 	shared_ptr<CryptoContext<Poly>> cryptoContext = CryptoContextHelper::getNewContext(input);
 	if( !cryptoContext ) {
@@ -108,7 +114,7 @@ int main(int argc, char *argv[]) {
 	std::cout << endl;
 
 
-	string namesAndValues = "AlanBo,3\nJeffBoboboTAA,1\nEmilyBoboboWOO,3\nBinkyBomber,5\n";
+	string namesAndValues = "Alan,3\nJeff,1\nAlice,3\nJefg,5\n";
 
 	std::vector<tuple<BytePlaintextEncoding,IntPlaintextEncoding>> newEncodedPlaintext = getEncodedPlaintextFromCSV(namesAndValues);
 
@@ -190,11 +196,11 @@ int main(int argc, char *argv[]) {
 	// a query is a tuple <seach term, operation (as uint), operation value (as int)>
 	std::vector<tuple<string, uint32_t, int>> queries;
 
-	queries.push_back(tuple<string, uint32_t, int>("Bo", 0, 0));
-	queries.push_back(tuple<string, uint32_t, int>("AlanBo", 2, 25));
-	queries.push_back(tuple<string, uint32_t, int>("JeffBoboboTBA", 0, 5));
-	queries.push_back(tuple<string, uint32_t, int>("JeffBoboboTAA", 1, 2));
-	queries.push_back(tuple<string, uint32_t, int>("BinkyBomber", 0, 16));
+	queries.push_back(tuple<string, uint32_t, int>("Alab", 0, 0));
+	queries.push_back(tuple<string, uint32_t, int>("Alan", 2, 25));
+	queries.push_back(tuple<string, uint32_t, int>("Jeffery", 0, 5));
+	queries.push_back(tuple<string, uint32_t, int>("Jeff", 1, 2));
+	queries.push_back(tuple<string, uint32_t, int>("Alice", 0, 16));
 
 
 	std::vector<tuple<BytePlaintextEncoding, IntPlaintextEncoding, IntPlaintextEncoding>> encodedPlaintextQueries;
