@@ -152,6 +152,11 @@ int main(int argc, char *argv[]) {
 
 	}
 
+	// const std::vector<Poly> &cipherText1Elements = get<0>(csvCiphertext.at(0))[0]->GetElements();
+
+	// std::cout << cipherText1Elements.size() << endl;
+	// // std::cout << typeid(cipherText1Elements[2]).name() << '\n';
+	// return -1;
 
 	// print for sanity check
 	for (unsigned int i = 0; i < csvCiphertext.size(); ++i)
@@ -326,6 +331,8 @@ int main(int argc, char *argv[]) {
 
 
 			std::cout << "Name found : " << decryptedName << " with return value : " << decryptedValue.EvalToInt(modulusVal) << endl;
+
+			std::cout << "And the binary value " << decryptedValue <<endl;
 		}
 	}
 
