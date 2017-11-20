@@ -9,3 +9,12 @@ g++ -std=gnu++11 -fPIC -o bin/demo/pke/demo-testing-pke src/pke/bin/demo/demo-te
 g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/profiler_for_cmults.o src/pke/demo/profiler_for_cmults.cpp
 
 g++ -std=gnu++11 -fPIC -o bin/demo/pke/profiler_for_cmults src/pke/bin/demo/profiler_for_cmults.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp
+
+
+
+
+
+
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/memory_size_profiler.o src/pke/demo/memory_size_profiler.cpp
+
+g++ -std=gnu++11 -fPIC -o bin/demo/pke/memory_size_profiler src/pke/bin/demo/memory_size_profiler.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp
