@@ -199,6 +199,9 @@ static shared_ptr<LPCryptoParameters<Element>> GetParameterObject(string& parmst
 	else if (parmstype == "LPCryptoParametersNull") {
 		return shared_ptr<LPCryptoParameters<Element>>(new LPCryptoParametersNull<Element>());
 	}
+	else if (parmstype == "LPCryptoParametersSHIELD") {
+		return shared_ptr<LPCryptoParameters<Element>>(new LPCryptoParametersSHIELD<Element>());
+	}
 
 	return shared_ptr<LPCryptoParameters<Element>>();
 }
@@ -221,6 +224,9 @@ static shared_ptr<LPPublicKeyEncryptionScheme<Element>> GetSchemeObject(string& 
 	}
 	else if (parmstype == "LPCryptoParametersNull") {
 		return shared_ptr<LPPublicKeyEncryptionScheme<Element>>(new LPPublicKeyEncryptionSchemeNull<Element>());
+	}
+	else if (parmstype == "LPCryptoParametersSHIELD") {
+		return shared_ptr<LPPublicKeyEncryptionScheme<Element>>(new LPPublicKeyEncryptionSchemeSHIELD<Element>());
 	}
 
 	return shared_ptr<LPPublicKeyEncryptionScheme<Element>>();
@@ -661,6 +667,51 @@ CryptoContextFactory<T>::genCryptoContextBV(shared_ptr<typename T::Params> ep,
 		depth));
 
 	shared_ptr<LPPublicKeyEncryptionScheme<T>> scheme(new LPPublicKeyEncryptionSchemeBV<T>());
+
+	return shared_ptr<CryptoContext<T>>(new CryptoContext<T>(params, scheme));
+}
+
+
+template <typename T>
+shared_ptr<CryptoContext<T>>
+CryptoContextFactory<T>::genCryptoContextSHIELD(shared_ptr<typename T::Params> ep,
+		const usint plaintextmodulus,
+		usint relinWindow, float stDev,
+		MODE mode, int depth)
+{
+	shared_ptr<LPCryptoParametersSHIELD<T>> params( new LPCryptoParametersSHIELD<T>(
+		ep,
+		BigInteger(plaintextmodulus),
+		stDev,
+		9, // assuranceMeasure,
+		1.006, // securityLevel,
+		relinWindow, // Relinearization Window
+		mode, //Mode of noise generation
+		depth) );
+
+	shared_ptr<LPPublicKeyEncryptionScheme<T>> scheme( new LPPublicKeyEncryptionSchemeSHIELD<T>() );
+
+	return shared_ptr<CryptoContext<T>>(new CryptoContext<T>(params, scheme));
+}
+
+template <typename T>
+shared_ptr<CryptoContext<T>>
+CryptoContextFactory<T>::genCryptoContextSHIELD(shared_ptr<typename T::Params> ep,
+	shared_ptr<EncodingParams> encodingParams,
+	usint relinWindow, float stDev,
+	MODE mode, int depth)
+{
+	shared_ptr<LPCryptoParametersSHIELD<T>> params(new LPCryptoParametersSHIELD<T>(
+		ep,
+		encodingParams,
+		stDev,
+		9, // assuranceMeasure,
+		1.006, // securityLevel,
+		relinWindow, // Relinearization Window
+		mode, //Mode of noise generation
+		depth));
+
+	shared_ptr<LPPublicKeyEncryptionScheme<T>> scheme(new LPPublicKeyEncryptionSchemeSHIELD<T>());
 
 	return shared_ptr<CryptoContext<T>>(new CryptoContext<T>(params, scheme));
 }
