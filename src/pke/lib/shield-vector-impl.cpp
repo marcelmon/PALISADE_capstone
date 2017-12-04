@@ -1,5 +1,5 @@
-/**
- * @file palisade.h -- PALISADE.
+/*
+* @file bv-vector-impl.cpp - BV scheme vector class implementation
  * @author  TPOC: palisade@njit.edu
  *
  * @copyright Copyright (c) 2017, New Jersey Institute of Technology (NJIT)
@@ -24,57 +24,11 @@
  *
  */
 
-#ifndef SRC_LIB_PALISADE_H_
-#define SRC_LIB_PALISADE_H_
-
-#include <initializer_list>
-
-#include <string>
-using std::string;
-
-#include <memory>
-using std::shared_ptr;
+#include "cryptocontext.h"
+#include "shield.cpp"
 
 namespace lbcrypto {
-
-template <class Element>
-class CryptoContext;
-
-template <class Element>
-class CryptoObject;
-
+template class LPCryptoParametersSHIELD<Poly>;
+template class LPPublicKeyEncryptionSchemeSHIELD<Poly>;
+template class LPAlgorithmSHIELD<Poly>;
 }
-
-#include "math/backend.h"
-#include "math/distrgen.h"
-#include "math/matrix.h"
-
-#include "utils/inttypes.h"
-
-#include "lattice/elemparams.h"
-#include "lattice/ilparams.h"
-#include "lattice/ildcrtparams.h"
-#include "lattice/ilelement.h"
-#include "lattice/poly.h"
-#include "../../core/lib/lattice/dcrtpoly.h"
-
-#include "encoding/encodingparams.h"
-
-#include "pubkeylp.h"
-
-#include "rlwe.h"
-#include "ltv.h"
-#include "stst.h"
-#include "bv.h"
-#include "fv.h"
-#include "nullscheme.h"
-#include "shield.h"
-
-#include "utils/serializable.h"
-
-#include "ciphertext.h"
-#include "rationalciphertext.h"
-
-
-
-#endif /* SRC_LIB_PALISADE_H_ */

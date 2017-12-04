@@ -50,6 +50,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #include "shield.h"
 
+#include <iostream>
+using namespace std;
+
 namespace lbcrypto {
 
 	template <class Element>
@@ -121,8 +124,10 @@ namespace lbcrypto {
 
 		typename Element::TugType tug;
 
-		int sigmaK;
-		int sigmaCr;
+
+		// PROBABLY NEED THESE
+		// int sigmaK;
+		// int sigmaCr;
 
 		//Generate the secret key element (is [1, -t] , only the -t will be stored due to math type restrictions)
 		Element t;
@@ -161,7 +166,7 @@ namespace lbcrypto {
 
 		Element b = a*t + e;
 
-		kp.secretKey->SetPrivateElement(std::move((t * -1));
+		kp.secretKey->SetPrivateElement(std::move((t * -1)));
 
 		kp.publicKey->SetPublicElementAtIndex(0, std::move(b));
 		kp.publicKey->SetPublicElementAtIndex(1, std::move(a));
@@ -182,10 +187,9 @@ namespace lbcrypto {
 
 		const shared_ptr<LPCryptoParametersSHIELD<Element>> cryptoParams = std::dynamic_pointer_cast<LPCryptoParametersSHIELD<Element>>(publicKey->GetCryptoParameters());
 
-		shared_ptr<Ciphertext<Element>> ciphertext(new Ciphertext<Element>(publicKey->GetCryptoContext()));
 
 		const shared_ptr<typename Element::Params> elementParams = cryptoParams->GetElementParams();
-		const typename Element::Integer &p = cryptoParams->GetPlaintextModulus();
+		// const typename Element::Integer &p = cryptoParams->GetPlaintextModulus();
 		const typename Element::DggType &dgg = cryptoParams->GetDiscreteGaussianGenerator();
 
 		typename Element::TugType tug;
@@ -197,7 +201,7 @@ namespace lbcrypto {
 		std::vector<Element> cVector;
 
 
-		BigInteger theModulus =  cryptoParams->GetCryptoParameters()->GetElementParams()->GetModulus();
+		BigInteger theModulus =  cryptoParams->GetElementParams()->GetModulus();
 
 
 		/*
@@ -220,15 +224,15 @@ namespace lbcrypto {
 
 
 		// # bits of security 
-		BigInteger l = ceil(log2(theModulus));
+		// BigInteger l = ceil(log2(theModulus));
+
+		int l = 30;
 
 		// ciphertext height (width=2)
-		BigInteger N = 2*l;
+		int N = 2*l;
 
 
 		
-
-		std::vector<const Element&> pkElements = publicKey->GetPublicElements();
 
 
 
@@ -237,23 +241,29 @@ namespace lbcrypto {
 			std::vector<Element> ciphertextElements;
 			for (int i = 0; i < N; ++i)
 			{
-				Element randCoefficient(rand()%2);
+
+				int power2 = 1 << (i%(N/2));
+
+
+				int randCoefficient = rand()%2;
 				for (int j = 0; j < 2; ++j)
 				{
 					Element ciphertextElement;
 					// get the bit decomposed multiplied plaintext
 					// BDI(I) gives an Nx2 matrix [1;2;4;8;0;0;0;0],[0;0;0;0;1;2;4;8] 
 					// 			`;`  is a new column vector and `,` is a new row vector
-					if(i < N/2 && j == 0 || i >= N/2 && j == 1){
-						ciphertextElement = plaintext * 2^(i%(N/2);	
+					if( (i < N/2 && j == 0) || (i >= N/2 && j == 1) ){
+
+						ciphertextElement = plaintext * power2;
 					}
 					else{
-						ciphertextElement = 0;
+						// true for initialize to 0s
+						ciphertextElement = Element(plaintext.GetParams(), EVALUATION, true);
 					}
 
 					Element noiseElement(dgg, elementParams, Format::EVALUATION);
 
-					ciphertextElement += randCoefficient * pkElements[j] + noiseElement;
+					ciphertextElement += randCoefficient * publicKey->GetPublicElements().at(j) + noiseElement;
 				
 					ciphertextElements.push_back(ciphertextElement);
 				}
@@ -285,28 +295,48 @@ namespace lbcrypto {
 		Poly *plaintext) const
 	{
 		const shared_ptr<LPCryptoParameters<Element>> cryptoParams = privateKey->GetCryptoParameters();
-		const typename Element::Integer &p = cryptoParams->GetPlaintextModulus();
+		// const typename Element::Integer &p = cryptoParams->GetPlaintextModulus();
 		const std::vector<Element> &ciphertextElements = ciphertext->GetElements();
 		const Element &privK = privateKey->GetPrivateElement();
 
 
-		Element::IntType CIPHERTEXT_MODULUS = cryptoParams->GetModulus();
+		// Element::IntType CIPHERTEXT_MODULUS = cryptoParams->GetModulus();
 
 		// Cnx2 * s2x1  (C == ciphertext lattice, s == secret key > privK) << fill in a 1 for first element in secret key
 		std::vector<Element> plaintextVector;
 
-		
+
+		Poly plaintextElement(privateKey->GetCryptoParameters()->GetElementParams(), EVALUATION, true);
+
+		int N = 30*2;
 		for (int i = 0; i < N/2; i+=2) // only do N/2 because we only extract first l (N=2l)
 		{
-			plaintextVector[i] = ciphertextElements[i] + ciphertextElements[i + 1] * privK;
-			plaintextVector[i].SwitchFormat();
+			Element newElement = ciphertextElements[i] + ciphertextElements[i + 1] * privK;
+
+			// cout << " ciphertextElements at " << i <<" values length " << ciphertextElements[i].GetValues().GetLength() << endl;
+
+			// cout << " ciphertextElements at " << i + 1 <<" values length " << ciphertextElements[i + 1].GetValues().GetLength() << endl;
+			newElement.SwitchFormat();
 
 			// extract the most significant bit
-			Element::IntType polyBit(plaintextVector[i].getValues().GetValAtIndex(0).GetBitAtIndex(0));
+			// cout << " new element values length " << newElement.GetValues().GetLength() << endl;
 
-			plaintext.setValAtIndex((unsigned int) i, polyBit);
 
-			plaintext.push_back(bit);
+			// cout << " new element value at index 0 " << newElement.GetValues().GetValAtIndex(0) << endl;
+
+
+			cout << " new element value msb " << newElement.GetValues().GetValAtIndex(0).GetMSB() << endl;
+			// typename Element::Integer polyBit(newElement.GetValues().GetValAtIndex(0).GetBitAtIndex( newElement.GetValues().GetValAtIndex(0).GetMSB() ));
+
+
+			typename Element::Integer polyBit(newElement.GetValues().GetValAtIndex(0).GetBitAtIndex( 29 ));
+
+
+			cout << "After making the interge poly bit " <<  polyBit << endl;
+
+
+			plaintextElement.SetValAtIndex((unsigned int) i, polyBit);
+
 		}
 
 		// Interpolation is needed in the case of Double-CRT interpolation, for example, DCRTPoly
@@ -314,6 +344,7 @@ namespace lbcrypto {
 		// Poly interpolatedElement = b.CRTInterpolate();
 		// *plaintext = interpolatedElement.SignedMod(p);
 
+		*plaintext = plaintextElement;
 		return DecryptResult(plaintext->GetLength());
 	}
 
@@ -330,9 +361,9 @@ namespace lbcrypto {
 	    shared_ptr<Ciphertext<Element>> newCiphertext(new Ciphertext<Element>(ciphertext1->GetCryptoContext()));
 	    const std::vector<Element> &cipherText1Elements = ciphertext1->GetElements();
 	    const std::vector<Element> &cipherText2Elements = ciphertext2->GetElements();
-	    const std::vector<Element> finalElements;
+	    std::vector<Element> finalElements;
 
-	    for (unsigned int i = 0; i < ciphertext2.size(); i++) {
+	    for (unsigned int i = 0; i < cipherText2Elements.size(); i++) {
 	        finalElements.push_back(cipherText1Elements[i] + cipherText2Elements[i]);
 	    }
 
@@ -344,7 +375,7 @@ namespace lbcrypto {
 
 	template <class Element>
 	shared_ptr<Ciphertext<Element>> LPAlgorithmSHESHIELD<Element>::EvalSub(const shared_ptr<Ciphertext<Element>> ciphertext1,
-		// const shared_ptr<Ciphertext<Element>> ciphertext2) const {
+		const shared_ptr<Ciphertext<Element>> ciphertext2) const {
 
 		// shared_ptr<Ciphertext<Element>> newCiphertext(new Ciphertext<Element>(ciphertext1->GetCryptoContext()));
 
@@ -838,7 +869,7 @@ DecryptResult LPAlgorithmMultipartySHIELD<Element>::MultipartyDecryptFusion(cons
 
 	// return DecryptResult(plaintext->GetLength());
 
-	return NULL;
+	return DecryptResult();
 
 }
 

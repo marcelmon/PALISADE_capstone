@@ -68,6 +68,9 @@ namespace lbcrypto {
 	class LPCryptoParametersStehleSteinfeld;
 
 	template<typename Element>
+	class LPCryptoParametersSHIELD;
+
+	template<typename Element>
 	class CryptoObject;
 
 	struct EncryptResult {

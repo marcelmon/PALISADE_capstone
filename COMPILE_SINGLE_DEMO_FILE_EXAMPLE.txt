@@ -18,3 +18,145 @@ g++ -std=gnu++11 -fPIC -o bin/demo/pke/profiler_for_cmults src/pke/bin/demo/prof
 g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/memory_size_profiler.o src/pke/demo/memory_size_profiler.cpp
 
 g++ -std=gnu++11 -fPIC -o bin/demo/pke/memory_size_profiler src/pke/bin/demo/memory_size_profiler.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp
+
+
+
+
+
+
+
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/multi_level_cmult.o src/pke/demo/multi_level_cmult.cpp
+
+g++ -std=gnu++11 -fPIC -o bin/demo/pke/multi_level_cmult src/pke/bin/demo/multi_level_cmult.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp
+
+
+
+
+
+
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/testing_shield_encryption_decryption.o src/pke/demo/testing_shield_encryption_decryption.cpp
+
+g++ -std=gnu++11 -fPIC -o bin/demo/pke/testing_shield_encryption_decryption src/pke/bin/demo/testing_shield_encryption_decryption.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp
+
+./bin/demo/pke/testing_shield_encryption_decryption
+
+
+
+
+
+
+
+
+
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/shield-vectorarray-impl.o src/pke/lib/shield-vectorarray-impl.cpp
+
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/shield-vector-impl.o src/pke/lib/shield-vector-impl.cpp
+
+
+g++ -std=gnu++11 -fPIC -fPIC -shared -Wl,--export-dynamic -fopenmp -o bin/lib/libPALISADEpke.so src/pke/bin/lib/fv-vectorarray-impl.o src/pke/bin/lib/ltv-vector-impl.o src/pke/bin/lib/bv-vector-impl.o src/pke/bin/lib/rationalct-vector-impl.o src/pke/bin/lib/cryptotiming-impl.o src/pke/bin/lib/shield-vectorarray-impl.o src/pke/bin/lib/ciphertext-vector-impl.o src/pke/bin/lib/rationalct-vectorarray-impl.o src/pke/bin/lib/fv-vector-impl.o src/pke/bin/lib/ciphertext-vectorarray-impl.o src/pke/bin/lib/pubkeylp-vectorarray-impl.o src/pke/bin/lib/nullscheme-vectorarray-impl.o src/pke/bin/lib/bv-vectorarray-impl.o src/pke/bin/lib/cryptocontext-vectorarray-impl.o src/pke/bin/lib/stst-vector-impl.o src/pke/bin/lib/pubkeylp-vector-impl.o src/pke/bin/lib/shield-vector-impl.o src/pke/bin/lib/cryptocontextparametersets-impl.o src/pke/bin/lib/cryptocontext-vector-impl.o src/pke/bin/lib/cryptocontexthelper-impl.o src/pke/bin/lib/nullscheme-vector-impl.o src/pke/bin/lib/ltv-vectorarray-impl.o src/pke/bin/lib/matrixser-impl.o src/pke/bin/lib/stst-vectorarray-impl.o -Lbin/lib -lPALISADEcore
+
+
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/testing_shield_encryption_decryption.o src/pke/demo/testing_shield_encryption_decryption.cpp
+
+g++ -std=gnu++11 -fPIC -o bin/demo/pke/testing_shield_encryption_decryption src/pke/bin/demo/testing_shield_encryption_decryption.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp
+
+./bin/demo/pke/testing_shield_encryption_decryption
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/fv-vectorarray-impl.o src/pke/lib/fv-vectorarray-impl.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/ltv-vector-impl.o src/pke/lib/ltv-vector-impl.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/bv-vector-impl.o src/pke/lib/bv-vector-impl.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/rationalct-vector-impl.o src/pke/lib/rationalct-vector-impl.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/cryptotiming-impl.o src/pke/lib/cryptotiming-impl.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/shield-vectorarray-impl.o src/pke/lib/shield-vectorarray-impl.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/ciphertext-vector-impl.o src/pke/lib/ciphertext-vector-impl.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/rationalct-vectorarray-impl.o src/pke/lib/rationalct-vectorarray-impl.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/fv-vector-impl.o src/pke/lib/fv-vector-impl.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/ciphertext-vectorarray-impl.o src/pke/lib/ciphertext-vectorarray-impl.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/pubkeylp-vectorarray-impl.o src/pke/lib/pubkeylp-vectorarray-impl.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/nullscheme-vectorarray-impl.o src/pke/lib/nullscheme-vectorarray-impl.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/bv-vectorarray-impl.o src/pke/lib/bv-vectorarray-impl.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/cryptocontext-vectorarray-impl.o src/pke/lib/cryptocontext-vectorarray-impl.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/stst-vector-impl.o src/pke/lib/stst-vector-impl.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/pubkeylp-vector-impl.o src/pke/lib/pubkeylp-vector-impl.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/shield-vector-impl.o src/pke/lib/shield-vector-impl.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/cryptocontext-vector-impl.o src/pke/lib/cryptocontext-vector-impl.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/cryptocontexthelper-impl.o src/pke/lib/cryptocontexthelper-impl.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/nullscheme-vector-impl.o src/pke/lib/nullscheme-vector-impl.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/ltv-vectorarray-impl.o src/pke/lib/ltv-vectorarray-impl.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/matrixser-impl.o src/pke/lib/matrixser-impl.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/stst-vectorarray-impl.o src/pke/lib/stst-vectorarray-impl.cpp
+ -- pke:linking bin/lib/libPALISADEpke.so from PKEOBJECTS
+mkdir -p bin/lib
+g++ -std=gnu++11 -fPIC -fPIC -shared -Wl,--export-dynamic -fopenmp -o bin/lib/libPALISADEpke.so src/pke/bin/lib/fv-vectorarray-impl.o src/pke/bin/lib/ltv-vector-impl.o src/pke/bin/lib/bv-vector-impl.o src/pke/bin/lib/rationalct-vector-impl.o src/pke/bin/lib/cryptotiming-impl.o src/pke/bin/lib/shield-vectorarray-impl.o src/pke/bin/lib/ciphertext-vector-impl.o src/pke/bin/lib/rationalct-vectorarray-impl.o src/pke/bin/lib/fv-vector-impl.o src/pke/bin/lib/ciphertext-vectorarray-impl.o src/pke/bin/lib/pubkeylp-vectorarray-impl.o src/pke/bin/lib/nullscheme-vectorarray-impl.o src/pke/bin/lib/bv-vectorarray-impl.o src/pke/bin/lib/cryptocontext-vectorarray-impl.o src/pke/bin/lib/stst-vector-impl.o src/pke/bin/lib/pubkeylp-vector-impl.o src/pke/bin/lib/shield-vector-impl.o src/pke/bin/lib/cryptocontextparametersets-impl.o src/pke/bin/lib/cryptocontext-vector-impl.o src/pke/bin/lib/cryptocontexthelper-impl.o src/pke/bin/lib/nullscheme-vector-impl.o src/pke/bin/lib/ltv-vectorarray-impl.o src/pke/bin/lib/matrixser-impl.o src/pke/bin/lib/stst-vectorarray-impl.o -Lbin/lib -lPALISADEcore
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/unittest/Main_TestAll.o src/pke/unittest/Main_TestAll.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/unittest/UnitTestSHE.o src/pke/unittest/UnitTestSHE.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/unittest/UnitTestBatching.o src/pke/unittest/UnitTestBatching.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/unittest/UnitTestFV.o src/pke/unittest/UnitTestFV.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/unittest/UnitTestBVDCRT.o src/pke/unittest/UnitTestBVDCRT.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/unittest/UnitTestEvalInnerProduct.o src/pke/unittest/UnitTestEvalInnerProduct.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/unittest/UnitTestPRE.o src/pke/unittest/UnitTestPRE.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/unittest/UnitTestEvalSum.o src/pke/unittest/UnitTestEvalSum.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/unittest/UnitTestEvalLinearRegression.o src/pke/unittest/UnitTestEvalLinearRegression.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/unittest/UnitTestStatisticalEval.o src/pke/unittest/UnitTestStatisticalEval.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/unittest/UnitTestEvalCrossCorrelation.o src/pke/unittest/UnitTestEvalCrossCorrelation.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/unittest/UnitTestENCRYPT.o src/pke/unittest/UnitTestENCRYPT.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/unittest/UnitTestAutomorphism.o src/pke/unittest/UnitTestAutomorphism.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/unittest/UnitTestMultiparty.o src/pke/unittest/UnitTestMultiparty.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/unittest/UnitTestSHEAdvanced.o src/pke/unittest/UnitTestSHEAdvanced.cpp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/unittest/UnitTestSerialize.o src/pke/unittest/UnitTestSerialize.cpp
+g++ -std=gnu++11 -fPIC src/pke/bin/unittest/Main_TestAll.o src/pke/bin/unittest/UnitTestSHE.o src/pke/bin/unittest/UnitTestBatching.o src/pke/bin/unittest/UnitTestFV.o src/pke/bin/unittest/UnitTestBVDCRT.o src/pke/bin/unittest/UnitTestEvalInnerProduct.o src/pke/bin/unittest/UnitTestPRE.o src/pke/bin/unittest/UnitTestEvalSum.o src/pke/bin/unittest/UnitTestEvalLinearRegression.o src/pke/bin/unittest/UnitTestStatisticalEval.o src/pke/bin/unittest/UnitTestEvalCrossCorrelation.o src/pke/bin/unittest/UnitTestENCRYPT.o src/pke/bin/unittest/UnitTestAutomorphism.o src/pke/bin/unittest/UnitTestMultiparty.o src/pke/bin/unittest/UnitTestSHEAdvanced.o src/pke/bin/unittest/UnitTestSerialize.o test/include/gtest/gtest-all.o -o bin/unittest/pke/tests -Lbin/lib -lPALISADEpke -Lbin/lib -lPALISADEcore -pthread -fopenmp   -lgomp
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/demo-packing.o src/pke/demo/demo-packing.cpp
+g++ -std=gnu++11 -fPIC -o bin/demo/pke/demo-packing src/pke/bin/demo/demo-packing.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp 
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/multi_level_cmult.o src/pke/demo/multi_level_cmult.cpp
+g++ -std=gnu++11 -fPIC -o bin/demo/pke/multi_level_cmult src/pke/bin/demo/multi_level_cmult.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp 
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/demo-she.o src/pke/demo/demo-she.cpp
+g++ -std=gnu++11 -fPIC -o bin/demo/pke/demo-she src/pke/bin/demo/demo-she.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp 
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/demo-testing-pke.o src/pke/demo/demo-testing-pke.cpp
+ g++ -std=gnu++11 -fPIC -o bin/demo/pke/demo-testing-pke src/pke/bin/demo/demo-testing-pke.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp 
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/demo-pre.o src/pke/demo/demo-pre.cpp
+g++ -std=gnu++11 -fPIC -o bin/demo/pke/demo-pre src/pke/bin/demo/demo-pre.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp 
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/tester_include.o src/pke/demo/tester_include.cpp
+g++ -std=gnu++11 -fPIC -o bin/demo/pke/tester_include src/pke/bin/demo/tester_include.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp 
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/testing_shield_encryption_decryption.o src/pke/demo/testing_shield_encryption_decryption.cpp
+g++ -std=gnu++11 -fPIC -o bin/demo/pke/testing_shield_encryption_decryption src/pke/bin/demo/testing_shield_encryption_decryption.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp 
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/palisade.o src/pke/demo/palisade.cpp
+g++ -std=gnu++11 -fPIC -o bin/demo/pke/palisade src/pke/bin/demo/palisade.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp 
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/demo-cross-correlation.o src/pke/demo/demo-cross-correlation.cpp
+g++ -std=gnu++11 -fPIC -o bin/demo/pke/demo-cross-correlation src/pke/bin/demo/demo-cross-correlation.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp 
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/demo-linregress.o src/pke/demo/demo-linregress.cpp
+g++ -std=gnu++11 -fPIC -o bin/demo/pke/demo-linregress src/pke/bin/demo/demo-linregress.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp 
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/demo-pke.o src/pke/demo/demo-pke.cpp
+g++ -std=gnu++11 -fPIC -o bin/demo/pke/demo-pke src/pke/bin/demo/demo-pke.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp 
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/profiler_for_cmults.o src/pke/demo/profiler_for_cmults.cpp
+g++ -std=gnu++11 -fPIC -o bin/demo/pke/profiler_for_cmults src/pke/bin/demo/profiler_for_cmults.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp 
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/memory_size_profiler.o src/pke/demo/memory_size_profiler.cpp
+g++ -std=gnu++11 -fPIC -o bin/demo/pke/memory_size_profiler src/pke/bin/demo/memory_size_profiler.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp 
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/demo-crypt-pre-text.o src/pke/demo/demo-crypt-pre-text.cpp
+g++ -std=gnu++11 -fPIC -o bin/demo/pke/demo-crypt-pre-text src/pke/bin/demo/demo-crypt-pre-text.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp 
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/multi_level_cmults_with_helper.o src/pke/demo/multi_level_cmults_with_helper.cpp
+g++ -std=gnu++11 -fPIC -o bin/demo/pke/multi_level_cmults_with_helper src/pke/bin/demo/multi_level_cmults_with_helper.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp 
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/BACKUP_demo-testing-pke.o src/pke/demo/BACKUP_demo-testing-pke.cpp
+g++ -std=gnu++11 -fPIC -o bin/demo/pke/BACKUP_demo-testing-pke src/pke/bin/demo/BACKUP_demo-testing-pke.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp 
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/demo_fusion_simple.o src/pke/demo/demo_fusion_simple.cpp
+g++ -std=gnu++11 -fPIC -o bin/demo/pke/demo_fusion_simple src/pke/bin/demo/demo_fusion_simple.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp 
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/demo-json.o src/pke/demo/demo-json.cpp
+g++ -std=gnu++11 -fPIC -o bin/demo/pke/demo-json src/pke/bin/demo/demo-json.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp
