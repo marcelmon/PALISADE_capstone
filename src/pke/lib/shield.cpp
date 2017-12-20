@@ -24,24 +24,12 @@
  *
  */
 /*
-This code implements the Brakerski-Vaikuntanathan (SHIELD) homomorphic encryption scheme.
-The scheme is described at http://www.wisdom.weizmann.ac.il/~zvikab/localpapers/IdealHom.pdf (or alternative Internet source:
-http://dx.doi.org/10.1007/978-3-642-22792-9_29).
+This code implements the SHIELD) homomorphic encryption scheme.
+The scheme is described at 
 The levelled Homomorphic scheme is described in
-"Fully Homomorphic Encryption without Bootstrapping", Internet Source: https://eprint.iacr.org/2011/277.pdf .
+
 Implementation details are provided in
-"Homomorphic Evaluation of the AES Circuit" Internet source: https://eprint.iacr.org/2012/099.pdf .
 
-{the link to the ACM TISSEC manuscript to be added}.
-
-License Information:
-
-Copyright (c) 2015, New Jersey Institute of Technology (NJIT)
-All rights reserved.
-Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
@@ -112,6 +100,9 @@ namespace lbcrypto {
 	LPKeyPair<Element> LPAlgorithmSHIELD<Element>::KeyGen(CryptoContext<Element>* cc, bool makeSparse)
 	{
 
+		// cout << "ROOT " << RootOfUnity<BigInteger>(1024, 2147473409);
+		// exit(1);
+
 		LPKeyPair<Element>	kp(new LPPublicKey<Element>(cc), new LPPrivateKey<Element>(cc));
 
 		const shared_ptr<LPCryptoParametersSHIELD<Element>> cryptoParams = std::static_pointer_cast<LPCryptoParametersSHIELD<Element>>(cc->GetCryptoParameters());
@@ -139,8 +130,25 @@ namespace lbcrypto {
 		else
 			t = Element(tug, elementParams, Format::COEFFICIENT);
 
+		
+
+		typename Element::Integer negOne(-1);
+
+	
+		cout << " T non neg " << t << endl;
+
+
 		t.SwitchFormat();
 
+		t *= negOne;
+		
+		// t.SwitchFormat();
+
+		cout << " T " << t << endl;
+		// exit(1);
+
+
+		
 		
 
 		// generate full public  key [Nx2]
@@ -158,18 +166,44 @@ namespace lbcrypto {
 		//
 		//		1 2 3 4 5 6 7 8    
 		//
-		
+			
 
-		Element a(dug, elementParams, Format::EVALUATION);
+		cout << " THE MODULUS : " << elementParams->GetModulus() << "AND MSB "  << elementParams->GetModulus().GetMSB() << endl;
+
+		cout << " THE MODULUS MSB : " << elementParams->GetModulus().GetMSB() << "AND MSB "  << elementParams->GetModulus().GetMSB() << endl;
+
+
+
+
+
+		Element a(dug, elementParams, Format::COEFFICIENT);
+
+		
+		
+		// exit(1);
+
+		a.SwitchFormat();
+
 		Element e(dgg, elementParams, Format::COEFFICIENT);
-		e.SwitchFormat(); // ????
+
+		e.SwitchFormat();
 
 		Element b = a*t + e;
 
-		kp.secretKey->SetPrivateElement(std::move((t * -1)));
+
+		
+
+
+		kp.secretKey->SetPrivateElement(std::move(t));
+
+
+
+
 
 		kp.publicKey->SetPublicElementAtIndex(0, std::move(b));
 		kp.publicKey->SetPublicElementAtIndex(1, std::move(a));
+
+
 
 		return kp;
 	}
@@ -196,12 +230,12 @@ namespace lbcrypto {
 
 		Element plaintext(ptxt, elementParams);
 
+		// now in evaluation format presumably (if switch)
 		plaintext.SwitchFormat();
 
-		std::vector<Element> cVector;
 
 
-		BigInteger theModulus =  cryptoParams->GetElementParams()->GetModulus();
+		
 
 
 		/*
@@ -222,30 +256,38 @@ namespace lbcrypto {
 
 		// store these values in constructor
 
+		typename Element::Integer theModulus =  elementParams->GetModulus();
+
+		cout << "The modulus is : " << theModulus << endl;
 
 		// # bits of security 
 		// BigInteger l = ceil(log2(theModulus));
 
-		int l = 30;
+		int l = theModulus.GetMSB();
 
 		// ciphertext height (width=2)
 		int N = 2*l;
 
 
-		
+		vector<typename Element::Integer> randOneOrZeros;
+	
 
 
 
+		// ciphertext is NX2 matrix of Element
 		if (doEncryption) {
+
+			typename Element::Integer randVal(rand()%2);
 
 			std::vector<Element> ciphertextElements;
 			for (int i = 0; i < N; ++i)
 			{
 
-				int power2 = 1 << (i%(N/2));
+				typename Element::Integer power2(1 << (i%(N/2)));
+				// power2.SwitchFormat(); 
 
+				// typename Element::Integer randCoefficient(rand()%2);
 
-				int randCoefficient = rand()%2;
 				for (int j = 0; j < 2; ++j)
 				{
 					Element ciphertextElement;
@@ -255,20 +297,24 @@ namespace lbcrypto {
 					if( (i < N/2 && j == 0) || (i >= N/2 && j == 1) ){
 
 						ciphertextElement = plaintext * power2;
+						// ciphertextElement.SwitchFormat();
 					}
 					else{
 						// true for initialize to 0s
-						ciphertextElement = Element(plaintext.GetParams(), EVALUATION, true);
+						ciphertextElement = Element(cryptoParams->GetElementParams(), COEFFICIENT, true);
+						ciphertextElement.SwitchFormat();
 					}
 
-					Element noiseElement(dgg, elementParams, Format::EVALUATION);
+					Element noiseElement(dgg, elementParams, Format::COEFFICIENT);
+					noiseElement.SwitchFormat();
 
-					ciphertextElement += randCoefficient * publicKey->GetPublicElements().at(j) + noiseElement;
-				
+					ciphertextElement += randVal * publicKey->GetPublicElements().at(j) + noiseElement;
+
 					ciphertextElements.push_back(ciphertextElement);
 				}
 			}
 
+			cout << "CIPHERTEXT ELEMENT SIZE : " << ciphertextElements.size() << endl;
 			ciphertext->SetElements(std::move(ciphertextElements));
 		}
 		else
@@ -303,14 +349,114 @@ namespace lbcrypto {
 		// Element::IntType CIPHERTEXT_MODULUS = cryptoParams->GetModulus();
 
 		// Cnx2 * s2x1  (C == ciphertext lattice, s == secret key > privK) << fill in a 1 for first element in secret key
-		std::vector<Element> plaintextVector;
 
 
-		Poly plaintextElement(privateKey->GetCryptoParameters()->GetElementParams(), EVALUATION, true);
+		Poly plaintextElement(privateKey->GetCryptoParameters()->GetElementParams(), COEFFICIENT, true);
 
-		int N = 30*2;
-		for (int i = 0; i < N/2; i+=2) // only do N/2 because we only extract first l (N=2l)
+		// store these values in constructor
+
+		typename Element::Integer theModulus =  privateKey->GetCryptoParameters()->GetElementParams()->GetModulus();
+
+		cout << "The modulus is : " << theModulus << endl;
+		
+		// # bits of security 
+		// BigInteger l = ceil(log2(theModulus));
+
+		int l = theModulus.GetMSB();
+
+
+		cout << " l security bits are : " << l << endl;
+
+		// ciphertext height (width=2)
+		int N = 2*l;
+		/*
+		ciphertextElements:
+
+			0 1
+			2 3
+			4 5
+
+		privK : // only t values are stored
+			1
+			t
+
+		*/
+
+
+		
+
+
+
+		unsigned int thePolySize = ciphertextElements.at(0).GetLength();
+
+
+		cout << " THE N " << N << endl;
+
+
+		
+
+
+
+		std::vector<Element> decryptMultiplyResults;
+		for (int i = 0; i < N; i+=2) // only do N/2 because we only extract first l (N=2l)
 		{
+
+			Element multRes = ciphertextElements[i] + ciphertextElements[i + 1] * privK;
+			multRes.SwitchFormat();
+			decryptMultiplyResults.push_back(multRes);
+		}
+
+
+		Poly finalPlaintext(privateKey->GetCryptoParameters()->GetElementParams(), COEFFICIENT, true);
+
+		for (unsigned int i = 0; i < decryptMultiplyResults.size(); ++i)
+		{
+			for (unsigned int j = 0; j < thePolySize; ++j)
+			{
+				if((int)j >= l){
+					cout <<"COEFFICIENT bit limit reached " << endl;
+					break;
+				}
+
+				typename Element::Integer currentCoefficientValue =  finalPlaintext.GetValAtIndex(j);
+
+				typename Element::Integer valueToAdd = decryptMultiplyResults.at(i).GetValAtIndex(j).GetBitAtIndex(31) << i;
+
+				cout << "Current value at COEFFICIENT : " << j << " " << currentCoefficientValue << endl;
+
+				cout << "Value to add at COEFFICIENT  : " << j << " " << valueToAdd << endl;
+
+				cout << "Final value not set    : " << j << " " << (currentCoefficientValue + valueToAdd) << endl;
+
+				finalPlaintext.SetValAtIndex(j , (currentCoefficientValue + valueToAdd ));
+
+				cout << "Resultant value  : " << finalPlaintext.GetValAtIndex(j) << endl;
+			}
+
+		}
+
+
+		*plaintext = finalPlaintext;
+
+
+		cout << "The plaintext " << finalPlaintext << endl;
+		
+		exit(1);
+
+		return DecryptResult(plaintext->GetLength());
+
+
+
+
+		// std::vector<Element> vectorOfResultPolys;
+
+		// cout << " THE N " << N << endl;
+		// for (int i = 0; i < N; i+=2) // only do N/2 because we only extract first l (N=2l)
+		// {
+
+
+
+			/*
 			Element newElement = ciphertextElements[i] + ciphertextElements[i + 1] * privK;
 
 			// cout << " ciphertextElements at " << i <<" values length " << ciphertextElements[i].GetValues().GetLength() << endl;
@@ -319,33 +465,28 @@ namespace lbcrypto {
 			newElement.SwitchFormat();
 
 			// extract the most significant bit
-			// cout << " new element values length " << newElement.GetValues().GetLength() << endl;
+			cout << "bit at security index l : " << l << " is" << newElement.GetValues().GetValAtIndex(0).GetBitAtIndex( l ) << endl; 
+			typename Element::Integer polyBit(newElement.GetValues().GetValAtIndex(0).GetBitAtIndex( l ));
 
 
-			// cout << " new element value at index 0 " << newElement.GetValues().GetValAtIndex(0) << endl;
+			// cout << "After making the interge poly bit " <<  polyBit << endl;
 
 
-			cout << " new element value msb " << newElement.GetValues().GetValAtIndex(0).GetMSB() << endl;
-			// typename Element::Integer polyBit(newElement.GetValues().GetValAtIndex(0).GetBitAtIndex( newElement.GetValues().GetValAtIndex(0).GetMSB() ));
+			plaintextElement.SetValAtIndex((unsigned int) i, std::move(polyBit));
+		
+
+			*/
+
+		// }
 
 
-			typename Element::Integer polyBit(newElement.GetValues().GetValAtIndex(0).GetBitAtIndex( 29 ));
+		// *plaintext = plaintextElement;
+		// return DecryptResult(plaintext->GetLength());
 
 
-			cout << "After making the interge poly bit " <<  polyBit << endl;
 
 
-			plaintextElement.SetValAtIndex((unsigned int) i, polyBit);
-
-		}
-
-		// Interpolation is needed in the case of Double-CRT interpolation, for example, DCRTPoly
-		// CRTInterpolate does nothing when dealing with single-CRT ring elements, such as Poly
-		// Poly interpolatedElement = b.CRTInterpolate();
-		// *plaintext = interpolatedElement.SignedMod(p);
-
-		*plaintext = plaintextElement;
-		return DecryptResult(plaintext->GetLength());
+		
 	}
 
 	template <class Element>
@@ -883,18 +1024,22 @@ DecryptResult LPAlgorithmMultipartySHIELD<Element>::MultipartyDecryptFusion(cons
 				this->m_algorithmEncryption = new LPAlgorithmSHIELD<Element>();
 			break;
 		case PRE:
+			throw std::logic_error("PRE feature not supported for SHIELD scheme");
 			if (this->m_algorithmPRE == NULL)
 				this->m_algorithmPRE = new LPAlgorithmPRESHIELD<Element>();
 			break;
 		case SHE:
+			throw std::logic_error("SHE feature not supported for SHIELD scheme");
 			if (this->m_algorithmSHE == NULL)
 				this->m_algorithmSHE = new LPAlgorithmSHESHIELD<Element>();
 			break;
 		case LEVELEDSHE:
+			throw std::logic_error("LEVELEDSHE feature not supported for SHIELD scheme");
 			if (this->m_algorithmLeveledSHE == NULL)
 				this->m_algorithmLeveledSHE = new LPLeveledSHEAlgorithmSHIELD<Element>();
 			break;
 		case MULTIPARTY:
+			throw std::logic_error("MULTIPARTY feature not supported for SHIELD scheme");
 			if (this->m_algorithmMultiparty == NULL)
 				this->m_algorithmMultiparty = new LPAlgorithmMultipartySHIELD<Element>();
 			break;
