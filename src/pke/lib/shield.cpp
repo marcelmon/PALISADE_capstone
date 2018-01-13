@@ -41,6 +41,17 @@ Implementation details are provided in
 #include <iostream>
 using namespace std;
 
+// static function<unique_ptr<Poly>()> generateRandOnesPoly(ElemParams elementParams) {
+
+//     Poly randOnes = Poly(elementParams, COEFFICIENT, true); 
+// 	for (unsigned int j = 0; j < elementParams->GetRingDimension(); ++j) {
+// 		randOnes.SetValAtIndex(j, rand()%2);
+// 		// randOnes.SwitchFormat();
+// 		return randOnes;
+// 	}	
+// }
+
+
 namespace lbcrypto {
 
 	template <class Element>
@@ -101,6 +112,7 @@ namespace lbcrypto {
 	{
 
 
+	
 
 
 		LPKeyPair<Element>	kp(new LPPublicKey<Element>(cc), new LPPrivateKey<Element>(cc));
@@ -116,6 +128,63 @@ namespace lbcrypto {
 		typename Element::TugType tug;
 
 
+		// Matrix<Element> BDIMatrix = Matrix<Element>(
+		// 		[elementParams]() { return make_unique<Element>(elementParams, EVALUATION, true); },
+		// 		62, 
+		// 		2
+		// 		);
+
+
+		// Element aRing(elementParams, COEFFICIENT, true);
+
+		// aRing.SetValAtIndex(0, 1);
+		// aRing.SetValAtIndex(1, elementParams->GetModulus() - 1);
+
+		// cout << "Bit 1 for number  1 " << aRing.GetValAtIndex(0).GetBitAtIndex(1) << endl;
+		// cout << "Bit 31 for number 1 " << aRing.GetValAtIndex(0).GetBitAtIndex(31) << endl;
+
+		// int accumOne = 0;
+
+		// cout << "Val at index 0 " << aRing.GetValAtIndex(0) << endl;
+		// for (int i = 1; i <= 31; ++i)
+		// {
+		// 	cout << std::to_string(aRing.GetValAtIndex(0).GetBitAtIndex(i)) << " ";
+		// 	accumOne += aRing.GetValAtIndex(0).GetBitAtIndex(i)<<(i - 1);
+		// }
+		// cout << "Accum one " << accumOne << endl;
+
+		// cout << "Bit 1 for number -1 " << aRing.GetValAtIndex(1).GetBitAtIndex(1) << endl;
+		// cout << "Bit 31 for number-1 " << aRing.GetValAtIndex(1).GetBitAtIndex(31) << endl;
+
+		// int accumTwo = 0;
+
+		// cout << "Val at index 1 " << aRing.GetValAtIndex(1) << endl;
+		// for (int i = 1; i <= 31; ++i)
+		// {
+		// 	cout << std::to_string(aRing.GetValAtIndex(1).GetBitAtIndex(i)) << " ";
+		// 	accumTwo += aRing.GetValAtIndex(1).GetBitAtIndex(i)<<(i - 1);
+		// }
+		// cout << "Accum two " << accumTwo << endl;
+
+		// exit(1);
+
+
+
+
+
+
+
+
+
+
+
+
+
+		// cout << lbcrypto::RootOfUnity<BigInteger>(2*1024, elementParams->GetModulus()) << endl;
+
+		// exit(1);
+
+
 		// Element testingRingOnes(elementParams, COEFFICIENT, true);
 
 		// testingRingOnes.SetValAtIndex(0, 1);
@@ -123,6 +192,22 @@ namespace lbcrypto {
 		// testingRingOnes.SetValAtIndex(2, 3);
 
 		// Element testingRingATwo(elementParams, COEFFICIENT, true);
+
+		// testingRingATwo.SetValAtIndex(0, 4);
+		// testingRingATwo.SetValAtIndex(1, 5);
+		// testingRingATwo.SetValAtIndex(2, 6);
+
+		// cout << testingRingOnes << endl << testingRingATwo << endl;
+
+		// testingRingOnes.SwitchFormat();
+		// testingRingATwo.SwitchFormat();
+
+		// Element res = testingRingOnes + testingRingATwo;
+		// res.SwitchFormat();
+		// cout << res << endl;
+		// exit(1);
+
+		
 
 		// testingRingATwo.SetValAtIndex(0, elementParams->GetModulus() - 2);
 
@@ -146,106 +231,6 @@ namespace lbcrypto {
 
 
 
-
-
-
-		// Element newEle = Element(dgg, elementParams, Format::COEFFICIENT);
-
-		// cout << newEle << endl;
-		// exit(1);
-
-
-		// Element testingRingOne(elementParams, COEFFICIENT, true);
-
-		// testingRingOne.SetValAtIndex(0, 1);
-		// testingRingOne.SetValAtIndex(1, 2);
-		// testingRingOne.SetValAtIndex(2, -1);
-		// testingRingOne.SetValAtIndex(3, -2);
-		// testingRingOne.SetValAtIndex(4, -3);
-
-		// cout << testingRingOne << endl;
-
-		// testingRingOne.SwitchFormat();
-		// testingRingOne.SwitchFormat();
-		// cout << testingRingOne << endl;
-
-		// testingRingOne.SwitchFormat();
-
-		// testingRingOne -= 3;
-
-
-		// testingRingOne.SwitchFormat();
-
-		// cout << testingRingOne << endl;
-
-		// cout << testingRingOne << endl;
-		// exit(1);
-		
-		// typename Element::Integer newInt(20);
-
-		// cout << newInt - 55 << endl;
-		// exit(1);
-
-
-
-
-
-
-
-		// Element testingRing(elementParams, COEFFICIENT, true);
-
-		// Element testingRingNeg(elementParams, COEFFICIENT, true);
-
-		// Element testingRingNegTWO(elementParams, COEFFICIENT, true);
-
-		// for (unsigned int i = 0; i < elementParams->GetRingDimension(); ++i)
-		// {
-		// 	testingRing.SetValAtIndex(i, i);
-
-		// 	testingRingNeg.SetValAtIndex(i, (-1)*i);
-
-		// 	cout << "Val at " << i << "for testingRing  : " << testingRing.GetValAtIndex(i) << endl;
-
-		// 	cout << "Val at " << i << "for testingRingNeg  : " << testingRingNeg.GetValAtIndex(i) << endl;
-
-		// }
-
-		
-
-
-		
-
-		// cout << "TESTING AT INDEX 1 " << testingRing.GetValAtIndex(1) << endl;
-
-		// cout << "TESTING NEG AT INDEX 1 converted " << testingRingNeg.GetValAtIndex(1) << endl;
-
-		// testingRing = testingRing.Negate();
-
-		// cout << "THE TESTING testingRing NEGATE \n" << testingRing << endl << endl;
-
-		// cout << "TESTING negated AT INDEX 1 " << testingRing.GetValAtIndex(1) << endl;
-
-
-
-
-		// exit(1);
-
-		// cout << "THE TESTING RING \n" << testingRing << endl << endl;
-		
-
-
-		// testingRing.SwitchFormat();
-
-		// testingRing *= -1;
-
-		// testingRing.SwitchFormat();
-
-		// cout << "THE TESTING RING TIMES NEG ONE \n" << testingRing << endl << endl;
-
-		// exit(1);
-
-
-
 		// PROBABLY NEED THESE
 		// int sigmaK;
 		// int sigmaCr;
@@ -261,12 +246,6 @@ namespace lbcrypto {
 			t = Element(tug, elementParams, Format::COEFFICIENT);
 
 		cout << "THE T NO neg " << t << endl;
-
-		
-
-
-
-
 
 		
 
@@ -295,41 +274,38 @@ namespace lbcrypto {
 		Element e(dgg, elementParams, Format::COEFFICIENT);
 
 
-		// // ERROR REMOVED for initial
-		// Element b = a*t;
+		
+		e.SwitchFormat(); // now EVALUATION
 
+		a.SwitchFormat(); // now EVALUATION
 
-		Element aTimesT(elementParams, COEFFICIENT, true);
-		for (unsigned int i = 0; i < elementParams->GetRingDimension(); ++i)
-		{
-			aTimesT.SetValAtIndex(i, a.GetValAtIndex(i) * t.GetValAtIndex(i));
-		}
+		t.SwitchFormat(); // now EVALUATION
 
+		Element aTimesT = a * t;
 
+		
+		
+		
 
-		Element b = aTimesT + e;
+		// Element b = aTimesT + e;
 
-		// cout << " a " << a << endl << "t" << t << endl;
-		// cout << "aTimesT : " << aTimesT << endl << "e " << e << endl << "b" << b << endl;
-		// exit(1);
+		Element b = aTimesT;
 
-		b.SwitchFormat();
-		a.SwitchFormat();
 
 
 		// secret key is [1; -t] but palisade only stores 1 value
 		// for encryption will hardcode value for 1
 
-		Element minusOneRing(elementParams, COEFFICIENT, true);
-		minusOneRing.SetValAtIndex(0, elementParams->GetModulus() - 1);
-		minusOneRing.SwitchFormat();
-
-		t.SwitchFormat();
-		t *= minusOneRing;
-
-		kp.secretKey->SetPrivateElement(std::move(t));
+		// IS ACTUALLY ZERO!!!
+		Element zeroRing(elementParams, COEFFICIENT, true);
+		zeroRing.SwitchFormat(); // now EVALUATION
+		
+		
+		Element tNeg = zeroRing - t;
 
 
+
+		kp.secretKey->SetPrivateElement(std::move(tNeg));
 
 
 		// public key is [b a]
@@ -380,11 +356,40 @@ namespace lbcrypto {
 		
 		typename Element::Integer theModulus =  elementParams->GetModulus();
 
-		int l = theModulus.GetMSB();
+		int l = theModulus.GetMSB(); // equivalent to ceil(log[modulus])
 		
 		int N = 2*l; // ciphertext height (width will be 2)
 
 		// ciphertext is NX2 matrix of Element
+
+
+
+
+
+		// shared_ptr<ILParams> copyILParams; // this type is needed in order to use Poly::MakeDiscreteUniformAllocator and Poly::MakeDiscreteGaussianCoefficientAllocator (as opposed to templated type)
+
+
+		// // need to access each paramater individually because we need to convert typename Element::Params into ILParams
+		// copyILParams.reset( 
+		// 	new ILParams(
+		// 		elementParams->GetCyclotomicOrder(), // Cyclotomic Order (2 * ring dimension)
+		// 		elementParams->GetModulus(), 
+		// 		elementParams->GetRootOfUnity()
+		// 		)
+		// 	);
+
+		// auto dugAllocator = Poly::MakeDiscreteUniformAllocator(
+		// 	copyILParams,
+		// 	EVALUATION
+		// );
+
+		// auto dggAllocator = Poly::MakeDiscreteGaussianCoefficientAllocator(
+		// 	copyILParams,
+		// 	EVALUATION,
+		// 	cryptoParams->GetDistributionParameter()
+		// );
+
+
 		if (doEncryption) {
 
 	// REMOVAL OF RAND COEEFs (rNx1)
@@ -416,30 +421,126 @@ namespace lbcrypto {
 				0 8   <- 2^(l-1)
 
 			*/
-			std::vector<typename Element::Integer> BDI;
+			std::vector<Element> BDI;
+
+
+			Matrix<Element> BDIMatrix = Matrix<Element>(
+				[elementParams]() { return make_unique<Element>(elementParams, EVALUATION, true); },
+				N, 
+				2
+				);
+
 			for (int i = 0; i < N; ++i)
 			{	
-				typename Element::Integer power2(1 << (i%(N/2)));
-
-				typename Element::Integer zeroVal(0);
+				// produces 1, 2, 4 ,8, ..  (2^[l] where l = {0,1,2,3,...})
+				Element power2Element(elementParams, COEFFICIENT, true);
+				power2Element.SetValAtIndex(0, 1 << (i%(N/2)));
+				power2Element.SwitchFormat();
 
 				if(i < N/2){
-					BDI.push_back(power2);
-					BDI.push_back(zeroVal);
+					BDIMatrix(i, 0) = power2Element;
+					BDIMatrix(i, 1) = Element(elementParams, EVALUATION, true); // zero element
 				}
 				else{
-					BDI.push_back(zeroVal);
-					BDI.push_back(power2);
+					BDIMatrix(i, 0) = Element(elementParams, EVALUATION, true); // zero element
+					BDIMatrix(i, 1) = power2Element;
 				}
+			}
+
+
+
+			// error is a distributed gaussian sampled for all Nx2 elements
+			Matrix<Element> errorMatrix = Matrix<Element>(
+				[elementParams, dgg]() { return make_unique<Element> (dgg, elementParams, Format::EVALUATION); },
+				N, 
+				2
+				);
+
+
+			Matrix<Element> BDITimesPlaintextMatrix = plaintext * BDIMatrix;
+
+
+
+			Matrix<Element> randCoefficientOnesMatrix = Matrix<Element>(
+				[elementParams]() { 
+					Element randOnes = Element(elementParams, COEFFICIENT, true); 
+					for (unsigned int j = 0; j < elementParams->GetRingDimension(); ++j) {
+						randOnes.SetValAtIndex(j, rand()%2);
+						randOnes.SwitchFormat();
+					}	
+					return make_unique<Element>(randOnes);
+				},
+				N, 
+				1
+				);
+
+			Element pubKeyAElement(publicKey->GetPublicElements().at(1));
+			
+			Element pubKeyBElement(publicKey->GetPublicElements().at(0));
+
+			Matrix<Element> publicKeyElementMatrix = Matrix<Element>(
+				[elementParams]() { return make_unique<Element>(elementParams, EVALUATION, true); },
+				1, 
+				2
+				);
+
+			publicKeyElementMatrix(0,0) = Element(pubKeyBElement);
+
+			publicKeyElementMatrix(0,1) = Element(pubKeyAElement);
+			
+
+			cout << randCoefficientOnesMatrix * publicKeyElementMatrix << endl << "randCoefficientOnesMatrix AFTER MULT MATRIX "  << endl;
+			exit(1);
+
+			for (int i = 0; i < N; ++i)
+			{	
+
+				Element power2Element(elementParams, COEFFICIENT, true);
+
+				// produces 1, 2, 4 ,8, ..  (2^[l] where l = {0,1,2,3,...})
+				power2Element.SetValAtIndex(0, 1 << (i%(N/2)));
+
+				Element zeroElement(elementParams, COEFFICIENT, true);
+				
+				power2Element.SwitchFormat();
+				zeroElement.SwitchFormat();
+
+				if(i < N/2){
+
+					BDI.push_back(power2Element);
+					BDI.push_back(zeroElement);
+
+					// cout << " [ " << power2Element.GetValAtIndex(0) << "   " << zeroElement.GetValAtIndex(0) << "]" << endl << endl;
+					
+					// // // // BDIMatrix(0, i/2) = power2Element * plaintext;
+					// // // // BDIMatrix(1, i/2) = zeroElement;
+				}
+				else{
+					
+					BDI.push_back(zeroElement);
+					BDI.push_back(power2Element);
+
+					// cout << " [ " << zeroElement.GetValAtIndex(0) << "   " << power2Element.GetValAtIndex(0) << "]" << endl << endl;
+
+					// // // // BDIMatrix(0, i/2) = zeroElement; 
+					// // // // BDIMatrix(1, i/2) = power2Element * plaintext;
+				}
+
 			}
 
 
 			// do u X BDI
+
+			// // // // BDIMatrix *= plaintext;
+
 			std::vector<Element> plaintTimesBDI;
 			for (unsigned int i = 0; i < BDI.size(); ++i)
 			{
-				plaintTimesBDI.push_back(BDI.at(i) * plaintext);	
+				plaintTimesBDI.push_back(plaintext * BDI.at(i));
+
 			}
+
+
 
 
 			// get the public key to use as Nx2
@@ -453,44 +554,43 @@ namespace lbcrypto {
 
 			*/
 			std::vector<Element> pkToUse;
-			for (int i = 0; i < N * 2; ++i)
+			for (int i = 0; i < N; ++i)
 			{
 				// // this is where to generate the rNx1 {0,1} and multiply into each row
 				// // true for initialize to 0s
 				Element randCoefficientPoly(cryptoParams->GetElementParams(), COEFFICIENT, true);
+
 				for (unsigned int j = 0; j < cryptoParams->GetElementParams()->GetRingDimension(); ++j) {
-					randCoefficientPoly.SetValAtIndex(j, (rand()%2));
+					randCoefficientPoly.SetValAtIndex(j, rand()%2);
 				}
 
 				randCoefficientPoly.SwitchFormat();
 
-				pkToUse.push_back(publicKey->GetPublicElements().at(0) * randCoefficientPoly);
-				pkToUse.push_back(publicKey->GetPublicElements().at(1) * randCoefficientPoly);
+				pkToUse.push_back(randCoefficientPoly * publicKey->GetPublicElements().at(0));
+				pkToUse.push_back(randCoefficientPoly * publicKey->GetPublicElements().at(1).GetValAtIndex(i));;
 
-				// pkToUse.push_back(publicKey->GetPublicElements().at(0)); // do these for no rand coefficient mult
-				// pkToUse.push_back(publicKey->GetPublicElements().at(1));
 			}
 
 
-			// do the final addition
+			// do the final addition of all parts
 			std::vector<Element> ciphertextElements;
 			for (int i = 0; i < N * 2; ++i)
 			{
 
 				Element errorToAdd(dgg, elementParams, Format::COEFFICIENT);
-				errorToAdd.SwitchFormat();
-				ciphertextElements.push_back(plaintTimesBDI.at(i) + pkToUse.at(i) + errorToAdd);
 
-				errorToAdd.SwitchFormat();
-				for (unsigned int j = 0; j < errorToAdd.GetLength(); ++j)
-				{
-					if(errorToAdd.GetValAtIndex(j) != 0){
-						// cout << "Error to add " << i << " is " << errorToAdd << endl;
-						break;
-					}
-				}
 				
-				// ciphertextElements.push_back(plaintTimesBDI.at(i) + pkToUse.at(i));  // do only this for no added error
+				// const shared_ptr<LPCryptoParametersSHIELD<Element>> newCryptoParams = cryptoParams;
+				// newCryptoParams->SetDistributionParameter(0.501);
+
+				// const typename Element::DggType &newDgg = newCryptoParams->GetDiscreteGaussianGenerator();
+				// errorToAdd = Element(newDgg, elementParams, Format::COEFFICIENT);
+
+				
+				errorToAdd.SwitchFormat();
+				// ciphertextElements.push_back(plaintTimesBDI.at(i) + pkToUse.at(i) + errorToAdd);
+				ciphertextElements.push_back(plaintTimesBDI.at(i) + pkToUse.at(i));
+
 			}
 
 			ciphertext->SetElements(std::move(ciphertextElements));
@@ -538,62 +638,73 @@ namespace lbcrypto {
 		cout << "The modulus is : " << theModulus << endl;
 		
 		// # bits of security 
-		// BigInteger l = ceil(log2(theModulus));
-
-		int l = theModulus.GetMSB();
-
+		int l = theModulus.GetMSB();  // bit # starts at 1
 
 		cout << " l security bits are : " << l << endl;
 
 		// ciphertext height (width=2)
 		int N = 2*l;
 		/*
-		ciphertextElements:
+			ciphertextElements:
 
-			0 1
-			2 3
-			4 5
+				0 1
+				2 3
+				4 5
 
-		as  0 1 2 3 4 5 ...
+			as  0 1 2 3 4 5 ...
 
-		privK : // only t values are stored
-			1
-			-t
-
+			privK : // only t values are stored
+				1
+				-t
 		*/
-
-		unsigned int thePolySize = ciphertextElements.at(0).GetLength();
-
-
-		cout << " THE N " << N << endl;
-
-
-		
-
 
 
 		std::vector<Element> decryptMultiplyResults;
-		for (int i = 0; i < N; i+=2) // only do N/2 because we only extract first l (N=2l)
+		for (int i = 0; i < N * 2; i+=2) // only do N/2 because we only extract first l (N=2l)
 		{
 
 			Element multRes = ciphertextElements[i] + ciphertextElements[i + 1] * privK;
 			multRes.SwitchFormat();
+
 			decryptMultiplyResults.push_back(multRes);
+
 		}
 
 
 		Poly finalPlaintext(privateKey->GetCryptoParameters()->GetElementParams(), COEFFICIENT, true);
 
 
+		// for (unsigned int i = decryptMultiplyResults.size() - 1; i >= 0 ; --i)
+		// {
+		// 	for (int j = 0; j < l; ++j)
+		// 	{
+
+
+		// 		typename Element::Integer theBit = decryptMultiplyResults.at(i).GetValAtIndex(j).GetBitAtIndex(l);
+
+		// 		cout << theBit << " ";
+
+		// 		if(theBit > 0){
+		// 			typename Element::Integer currentPolyCoefficient = finalPlaintext.GetValAtIndex(j);
+		// 			finalPlaintext.SetValAtIndex(j, currentPolyCoefficient + 1 << j);
+		// 		}
+				
+		// 		continue;
+
+		// 	}
+
+		// 	if(i == 0){
+		// 		break;
+		// 	}
+
+		// 	cout << endl;
+
+		// }
+
 		for (unsigned int i = 0; i < decryptMultiplyResults.size(); ++i)
 		{
-			for (unsigned int j = 0; j < thePolySize; ++j)
+			for (int j = 0; j < l; ++j)
 			{
-				if((int)j >= l){
-					cout <<"COEFFICIENT bit limit reached " << endl;
-					break;
-				}
-
 
 				typename Element::Integer theBit = decryptMultiplyResults.at(i).GetValAtIndex(j).GetBitAtIndex(l);
 
@@ -611,15 +722,38 @@ namespace lbcrypto {
 
 			}
 
+			if(i == decryptMultiplyResults.size() - 1){
+
+				cout << endl << "POLY AT I IS : " << endl;
+
+				for (int j = 0; j < l; ++j)
+				{
+
+					for (unsigned int k = 1; k <= privateKey->GetCryptoParameters()->GetElementParams()->GetCyclotomicOrder()/2; ++k)
+					{
+
+						typename Element::Integer theBit = decryptMultiplyResults.at(i).GetValAtIndex(j).GetBitAtIndex(k);
+
+						cout << theBit << " ";
+					}
+
+					cout << endl;
+
+				}
+
+				exit(1);
+			
+			}
+
 			cout << endl;
 
 		}
 
-		cout << finalPlaintext;
+		// cout << finalPlaintext;
 		*plaintext = finalPlaintext;
 		exit(1);
 
-		return DecryptResult(plaintext->GetLength())
+		return DecryptResult(plaintext->GetLength());
 
 
 
