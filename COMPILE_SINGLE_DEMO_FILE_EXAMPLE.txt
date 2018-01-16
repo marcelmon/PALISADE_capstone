@@ -1,3 +1,62 @@
+
+
+to compile shield.cpp changes an include in the Palisade library
+
+	g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/shield-vectorarray-impl.o src/pke/lib/shield-vectorarray-impl.cpp
+
+	g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/shield-vector-impl.o src/pke/lib/shield-vector-impl.cpp
+
+
+	g++ -std=gnu++11 -fPIC -fPIC -shared -Wl,--export-dynamic -fopenmp -o bin/lib/libPALISADEpke.so src/pke/bin/lib/fv-vectorarray-impl.o src/pke/bin/lib/ltv-vector-impl.o src/pke/bin/lib/bv-vector-impl.o src/pke/bin/lib/rationalct-vector-impl.o src/pke/bin/lib/cryptotiming-impl.o src/pke/bin/lib/shield-vectorarray-impl.o src/pke/bin/lib/ciphertext-vector-impl.o src/pke/bin/lib/rationalct-vectorarray-impl.o src/pke/bin/lib/fv-vector-impl.o src/pke/bin/lib/ciphertext-vectorarray-impl.o src/pke/bin/lib/pubkeylp-vectorarray-impl.o src/pke/bin/lib/nullscheme-vectorarray-impl.o src/pke/bin/lib/bv-vectorarray-impl.o src/pke/bin/lib/cryptocontext-vectorarray-impl.o src/pke/bin/lib/stst-vector-impl.o src/pke/bin/lib/pubkeylp-vector-impl.o src/pke/bin/lib/shield-vector-impl.o src/pke/bin/lib/cryptocontextparametersets-impl.o src/pke/bin/lib/cryptocontext-vector-impl.o src/pke/bin/lib/cryptocontexthelper-impl.o src/pke/bin/lib/nullscheme-vector-impl.o src/pke/bin/lib/ltv-vectorarray-impl.o src/pke/bin/lib/matrixser-impl.o src/pke/bin/lib/stst-vectorarray-impl.o -Lbin/lib -lPALISADEcore
+
+
+
+
+
+to compile src/pke/bin/demo/testing_shield_encryption_decryption.cpp for testing shield
+
+	g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/testing_shield_encryption_decryption.o src/pke/demo/testing_shield_encryption_decryption.cpp
+
+	g++ -std=gnu++11 -fPIC -o bin/demo/pke/testing_shield_encryption_decryption src/pke/bin/demo/testing_shield_encryption_decryption.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp
+
+	./bin/demo/pke/testing_shield_encryption_decryption
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 for : src/pke/demo/demo-testing-pke.cpp
 
 g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/demo-testing-pke.o src/pke/demo/demo-testing-pke.cpp
@@ -40,27 +99,6 @@ g++ -std=gnu++11 -fPIC -o bin/demo/pke/testing_shield_encryption_decryption src/
 
 ./bin/demo/pke/testing_shield_encryption_decryption
 
-
-
-
-
-
-
-
-
-g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/shield-vectorarray-impl.o src/pke/lib/shield-vectorarray-impl.cpp
-
-g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/shield-vector-impl.o src/pke/lib/shield-vector-impl.cpp
-
-
-g++ -std=gnu++11 -fPIC -fPIC -shared -Wl,--export-dynamic -fopenmp -o bin/lib/libPALISADEpke.so src/pke/bin/lib/fv-vectorarray-impl.o src/pke/bin/lib/ltv-vector-impl.o src/pke/bin/lib/bv-vector-impl.o src/pke/bin/lib/rationalct-vector-impl.o src/pke/bin/lib/cryptotiming-impl.o src/pke/bin/lib/shield-vectorarray-impl.o src/pke/bin/lib/ciphertext-vector-impl.o src/pke/bin/lib/rationalct-vectorarray-impl.o src/pke/bin/lib/fv-vector-impl.o src/pke/bin/lib/ciphertext-vectorarray-impl.o src/pke/bin/lib/pubkeylp-vectorarray-impl.o src/pke/bin/lib/nullscheme-vectorarray-impl.o src/pke/bin/lib/bv-vectorarray-impl.o src/pke/bin/lib/cryptocontext-vectorarray-impl.o src/pke/bin/lib/stst-vector-impl.o src/pke/bin/lib/pubkeylp-vector-impl.o src/pke/bin/lib/shield-vector-impl.o src/pke/bin/lib/cryptocontextparametersets-impl.o src/pke/bin/lib/cryptocontext-vector-impl.o src/pke/bin/lib/cryptocontexthelper-impl.o src/pke/bin/lib/nullscheme-vector-impl.o src/pke/bin/lib/ltv-vectorarray-impl.o src/pke/bin/lib/matrixser-impl.o src/pke/bin/lib/stst-vectorarray-impl.o -Lbin/lib -lPALISADEcore
-
-
-g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/testing_shield_encryption_decryption.o src/pke/demo/testing_shield_encryption_decryption.cpp
-
-g++ -std=gnu++11 -fPIC -o bin/demo/pke/testing_shield_encryption_decryption src/pke/bin/demo/testing_shield_encryption_decryption.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp
-
-./bin/demo/pke/testing_shield_encryption_decryption
 
 
 

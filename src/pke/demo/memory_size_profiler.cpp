@@ -151,12 +151,12 @@ int runOperations(string schemeLabel)
 	double key_pair_memory;
 
 	double cryptoContextMemorySize; 
-	double total_plaintext_multiplicand_size, total_plaintext_multiplier_size;
+	// double total_plaintext_multiplicand_size, total_plaintext_multiplier_size;
 	double total_ciphertext_multiplicand_size, total_ciphertext_multiplier_size;
 	double total_ciphertext_result_size;
 
 
-	double average_plaintext_multiplicand_size, average_plaintext_multiplier_size;
+	// double average_plaintext_multiplicand_size, average_plaintext_multiplier_size;
 	double average_ciphertext_multiplicand_size, average_ciphertext_multiplier_size;
 	double average_ciphertext_result_size;
 
@@ -178,10 +178,8 @@ int runOperations(string schemeLabel)
 	cryptoContextMemorySize = vm_usage_end - vm_usage_start;
 
 
-	LPKeyPair<Poly> keyPair;
-
-
 	process_mem_usage(vm_usage_start, resident_set_start);
+	LPKeyPair<Poly> keyPair;
 	keyPair = cryptoContext->KeyGen();
 	process_mem_usage(vm_usage_end, resident_set_end);
 
@@ -224,7 +222,9 @@ int runOperations(string schemeLabel)
 	{	
 		process_mem_usage(vm_usage_start, resident_set_start);
 		
-		IntPlaintextEncoding plaintextMultiplicand(convertIntToBits(vectorOfIntMultiplicands.at(i)));
+		// IntPlaintextEncoding plaintextMultiplicand(convertIntToBits(vectorOfIntMultiplicands.at(i)));
+
+		IntPlaintextEncoding plaintextMultiplicand(vectorOfIntMultiplicands.at(i));
 		process_mem_usage(vm_usage_end, resident_set_end);
 
 		plaintextMultiplicandMemory.push_back((vm_usage_end - vm_usage_start));
@@ -234,8 +234,8 @@ int runOperations(string schemeLabel)
 		// cout << "Multiplicand " << plaintextMultiplicand << endl;
 	}
 	process_mem_usage(total_vm_usage_end, total_resident_set_end);
-	total_plaintext_multiplicand_size = total_vm_usage_end - total_vm_usage_start;
-	average_plaintext_multiplicand_size = total_plaintext_multiplicand_size/(static_cast<int>(vectorOfIntMultiplicands.size()));
+	// total_plaintext_multiplicand_size = total_vm_usage_end - total_vm_usage_start;
+	// average_plaintext_multiplicand_size = total_plaintext_multiplicand_size/(static_cast<int>(vectorOfIntMultiplicands.size()));
 
 
 	// endcode multipliers
@@ -244,7 +244,9 @@ int runOperations(string schemeLabel)
 	{
 
 		process_mem_usage(vm_usage_start, resident_set_start);
-		IntPlaintextEncoding plaintextMultiplier(convertIntToBits(vectorOfIntMultipliers.at(i)));
+
+		IntPlaintextEncoding plaintextMultiplier(vectorOfIntMultipliers.at(i));
+		// IntPlaintextEncoding plaintextMultiplier(convertIntToBits(vectorOfIntMultipliers.at(i)));
 		process_mem_usage(vm_usage_end, resident_set_end);
 
 		plaintextMultiplierMemory.push_back((vm_usage_end - vm_usage_start));
@@ -255,8 +257,8 @@ int runOperations(string schemeLabel)
 		// cout << "Multiplier " << plaintextMultiplier << endl;
 	}
 	process_mem_usage(total_vm_usage_end, total_resident_set_end);
-	total_plaintext_multiplier_size = total_vm_usage_end - total_vm_usage_start;
-	average_plaintext_multiplier_size = total_plaintext_multiplier_size/(static_cast<double>(vectorOfIntMultipliers.size()));
+	// total_plaintext_multiplier_size = total_vm_usage_end - total_vm_usage_start;
+	// average_plaintext_multiplier_size = total_plaintext_multiplier_size/(static_cast<double>(vectorOfIntMultipliers.size()));
 
 
 	std::vector<vector<shared_ptr<Ciphertext<Poly>>>> ciphertextVectorOfMultiplicands;
@@ -398,7 +400,9 @@ int runOperations(string schemeLabel)
 		multiplicandIndex = i /5;
 
 		multiplierIndex = i%5;
-		std::cout << vectorOfIntMultiplicands.at(multiplicandIndex) << " X " << vectorOfIntMultipliers.at(multiplierIndex) << " = " << convertIntPlaintextEncodingToUint(multResult) << endl;
+		// std::cout << vectorOfIntMultiplicands.at(multiplicandIndex) << " X " << vectorOfIntMultipliers.at(multiplierIndex) << " = " << convertIntPlaintextEncodingToUint(multResult) << endl;
+
+		std::cout << vectorOfIntMultiplicands.at(multiplicandIndex) << " X " << vectorOfIntMultipliers.at(multiplierIndex) << " = " << multResult.EvalToInt(cryptoContext->GetCryptoParameters()->GetPlaintextModulus().ConvertToInt()) << endl;
 
 		// if(vectorOfIntMultiplicands.at(multiplicandIndex) * vectorOfIntMultipliers.at(multiplierIndex) != convertIntPlaintextEncodingToUint(multResult)){
 		// 	cout << "error " << endl << multResult << endl;
@@ -438,8 +442,8 @@ int runOperations(string schemeLabel)
 
 	remove(pubkeyFileName.c_str());
 
-	cout << "pub key object memory : " << sizeof(*keyPair.publicKey) << endl;
-	cout << "pub key size : " << pubKeyFileSize << endl;
+	// cout << "pub key object memory : " << sizeof(*keyPair.publicKey) << endl;
+	cout << "pub key serialized file size : " << pubKeyFileSize/1000 << " KB" << endl;
 	// Serialize private key
 	
 	Serialized privK;
@@ -450,19 +454,25 @@ int runOperations(string schemeLabel)
 
 	remove(privkeyFileName.c_str());
 
-	cout << "priv key object memory : " << sizeof(*keyPair.secretKey) << endl;
-	cout << "priv key size : " << privKeyFileSize << endl;
+	// cout << "priv key object memory : " << sizeof(*keyPair.secretKey) << endl;
+	cout << "priv key serialized file size : " << privKeyFileSize/1000 << " KB" << endl;
 
+	double total_key_file_memory = privKeyFileSize + pubKeyFileSize;
 
-	std::cout << "Key pair memory : " << key_pair_memory << " KB" << endl;
+	cout << "total key serialized file size : " << total_key_file_memory/1000 << " KB" << endl;
+
+	std::cout << "Key pair memory : " << key_pair_memory/1000 << " KB" << endl;
 
 	vector<long> multiplicandSizes;
 	vector<long> multiplierSizes;
 
 	vector<long> multResultSizes;
 
-	cout << "Average plaintext multiplier memory size : " << average_plaintext_multiplier_size << " KB" << endl << endl;
-	cout << "Average plaintext multiplicand memory size : " << average_plaintext_multiplicand_size << " KB" << endl << endl;
+	// cout << "Average plaintext multiplier memory size : " << average_plaintext_multiplier_size << " KB" << endl << endl;
+	// cout << "Average plaintext multiplicand memory size : " << average_plaintext_multiplicand_size << " KB" << endl << endl;
+	
+	cout << endl;
+
 	// serialize original multiplicand ciphertexts
 	for (unsigned int i = 0; i < ciphertextVectorOfMultiplicands.size(); ++i) {
 
@@ -476,12 +486,16 @@ int runOperations(string schemeLabel)
 		multiplicandSizes.push_back(ciphertextFileSize);
 
 		
-		cout << "Pre mul cipher serialized file size : " << ciphertextFileSize << endl;
+		// cout << "Pre mul cipher serialized file size : " << ciphertextFileSize << endl;
 
 		//std::cout << "Pre mul ciphertext virtual memory : " << plaintextMultiplicandMemory.at(i) << " KB" << endl;
 	}
+	float averageCipherMultiplicandSerializedFileSize = accumulate(multiplicandSizes.begin(), multiplicandSizes.end(), 0.0)/multiplicandSizes.size();
 
-	cout << "Pre mul average cipher memory size : " << average_ciphertext_multiplicand_size << " KB";
+	cout << "Pre mul average cipher multiplicand serialized file size : " << averageCipherMultiplicandSerializedFileSize/1000 << " KB" << endl;
+
+
+	cout << "Pre mul average cipher multiplicand memory size : " << average_ciphertext_multiplicand_size << " KB";
 	cout << endl;
 
 	// serialize original multiplier ciphertexts
@@ -502,7 +516,12 @@ int runOperations(string schemeLabel)
 		// std::cout << "Pre mul ciphertext virtual memory : " << plaintextMultiplierMemory.at(i) << " KB" << endl;
 	}
 
-	cout << "Pre mul average cipher memory size : " << average_ciphertext_multiplier_size << " KB";
+	float averageCipherMultiplierSerializedFileSize = accumulate(multiplierSizes.begin(), multiplierSizes.end(), 0.0)/multiplierSizes.size();
+
+	cout << "Pre mul average cipher multiplier serialized file size : " << averageCipherMultiplierSerializedFileSize/1000 << " KB" << endl;
+
+
+	cout << "Pre mul average cipher multiplier memory size : " << average_ciphertext_multiplier_size << " KB";
 	cout << endl;
 
 	cout << endl;
@@ -521,13 +540,17 @@ int runOperations(string schemeLabel)
 
 		multResultSizes.push_back(ciphertextFileSize);
 
-		cout << "Post mul cipher serialized file size : " << ciphertextFileSize << endl;
+		// cout << "Post mul cipher serialized file size : " << ciphertextFileSize << endl;
 
-		std::cout << "Post mul ciphertext virtual memory : " << ciphertextResultsMemory.at(i) << " KB" << endl;
+		// std::cout << "Post mul ciphertext virtual memory : " << ciphertextResultsMemory.at(i) << " KB" << endl;
 	}
 
+	float averageCipherResultSerializedFileSize = accumulate(multResultSizes.begin(), multResultSizes.end(), 0.0)/multResultSizes.size();
+
+	cout << "Post mul average cipher serialized file size : " << averageCipherResultSerializedFileSize/1000 << " KB" << endl;
+
 	cout << "Post mul average cipher memory size : " << average_ciphertext_result_size << " KB";
-	cout << endl;
+	cout << endl << endl;
 
 
 	// serialize the crypto context
@@ -539,7 +562,7 @@ int runOperations(string schemeLabel)
 	remove(cryptoContextSerializeFilePrefix.c_str());
 
 	// cout << "Crypto object memory " << sizeof(*cryptoContext) << endl;
-	cout << "Crypto Context object serialized file size " << cryptoContextFileSize << endl << endl;
+	cout << "Crypto Context object serialized file size " << cryptoContextFileSize/1000 << " KB" << endl << endl;
 	cout << "Crypto Context memory size : " << cryptoContextMemorySize << " KB" << endl;
 	return 1;
 }
@@ -594,7 +617,7 @@ int main(int argc, char *argv[]) {
 
 			cout << "Total outside mem diff: " << (outside_vm_usage_end - outside_vm_usage_start) << " KB" << endl << endl;
 			std::cout << "Success." << endl << endl << endl;
-			sleep(5);
+			sleep(2);
 		} catch (const std::exception &e){
 			std::cout << "Exception caught " << e.what() << endl;
 		}

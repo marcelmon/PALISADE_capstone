@@ -54,6 +54,7 @@
 #include <string>
 #include <sstream>
 
+#include <typeinfo>
 
 using namespace std;
 using namespace lbcrypto;
@@ -242,7 +243,7 @@ int runOperations(shared_ptr<CryptoContext<Element>> cryptoContext, int depth, i
 	// int plaintextModulus =  cryptoContext->GetCryptoParameters()->GetPlaintextModulus().ConvertToInt();
 
 	cryptoContext->Enable(ENCRYPTION);
-	// cryptoContext->Enable(SHE);
+	cryptoContext->Enable(SHE);
 	// cryptoContext->Enable(LEVELEDSHE);
 	// cryptoContext->Enable(PRE);
 
@@ -250,7 +251,7 @@ int runOperations(shared_ptr<CryptoContext<Element>> cryptoContext, int depth, i
 	LPKeyPair<Element> keyPair = cryptoContext->KeyGen();
 
 	// eval key generation
-	// cryptoContext->EvalMultKeyGen(keyPair.secretKey);
+	cryptoContext->EvalMultKeyGen(keyPair.secretKey);
 
 	
 	// saved ciphertext results (for mem totalling)
@@ -261,9 +262,12 @@ int runOperations(shared_ptr<CryptoContext<Element>> cryptoContext, int depth, i
 
 	// encrypt all the values to be multiplied
 	vector<vector<shared_ptr<Ciphertext<Element>>>> allCiphertexts;
-	for (unsigned int i = 0; i < allValues.size(); ++i)
+	for (unsigned int i = 0; i < 2; ++i)
 	{
 		cout << "encrypting : " << allValues.at(i) << endl;
+
+		cout << "AS : " << endl;
+		cout << IntPlaintextEncoding(allValues.at(i)) << endl;
 		if(isBitEncode == 1){
 			encodedValues.push_back(IntPlaintextEncoding(convertIntToBits(allValues.at(i))));	
 		}
@@ -275,15 +279,37 @@ int runOperations(shared_ptr<CryptoContext<Element>> cryptoContext, int depth, i
 		allCiphertexts.push_back(ciphertextValue);
 
 
-		cout << "encrypted:" << endl;
+		// cout << "encrypted:" << endl;
 
 		IntPlaintextEncoding ptValue;
 		cryptoContext->Decrypt(keyPair.secretKey, ciphertextValue, &ptValue, true);
-		cout << "decrypted:" << endl;
-		cout << "Value :  " << allValues.at(i) << " decrypted to : " << convertIntPlaintextEncodingToInt(ptValue) << endl;
+		// cout << "decrypted:" << endl;
+		// cout << "Value :  " << allValues.at(i) << " decrypted to : " << convertIntPlaintextEncodingToInt(ptValue) << endl;
 
 	}
 
+	cout << "Doing an ADD " << endl;
+	savedCiphertextResults.push_back(cryptoContext->EvalAdd(allCiphertexts.at(0)[0], allCiphertexts.at(1)[0]));
+
+	IntPlaintextEncoding ptValueAdd;
+	cryptoContext->Decrypt(keyPair.secretKey, vector<shared_ptr<Ciphertext<Element>>>(1, savedCiphertextResults.at(0)), &ptValueAdd, true);
+
+	cout << "Value :  " << allValues.at(0) << " + " << allValues.at(1) << " decrypted to : \n";
+
+	cout << convertIntPlaintextEncodingToInt(ptValueAdd) << endl << endl << endl;
+
+
+	cout << "Doing a mult " << endl;
+	savedCiphertextResults.push_back(cryptoContext->EvalMult(allCiphertexts.at(0)[0], allCiphertexts.at(1)[0]));
+
+	IntPlaintextEncoding ptValueMult;
+	cryptoContext->Decrypt(keyPair.secretKey, vector<shared_ptr<Ciphertext<Element>>>(1, savedCiphertextResults.at(1)), &ptValueMult, true);
+
+	cout << "Value :  " << allValues.at(0) << " * " << allValues.at(1) << " decrypted to : \n";
+
+	cout << convertIntPlaintextEncodingToInt(ptValueMult) << endl;
+
+	exit(1);
 
 	// // perform the add or mults
 	// for (unsigned int i = 0; i < allCiphertexts.size() - 1; ++i) {
@@ -308,6 +334,16 @@ int runOperations(shared_ptr<CryptoContext<Element>> cryptoContext, int depth, i
 	// }
 
 
+
+
+
+
+
+
+
+
+/*
+
 	// decrypt the multiply values for sanity checking
 	vector<IntPlaintextEncoding> plaintextMultipliersVector;
 	for (unsigned int i = 0; i < allCiphertexts.size(); ++i)
@@ -316,10 +352,25 @@ int runOperations(shared_ptr<CryptoContext<Element>> cryptoContext, int depth, i
 		cryptoContext->Decrypt(keyPair.secretKey, allCiphertexts.at(i), &ptValue, true);
 		plaintextMultipliersVector.push_back(ptValue);
 
-		cout << "Value :  " << allValues.at(i) << " decrypted to : " << convertIntPlaintextEncodingToInt(ptValue) << endl;
+		// cout << "Value :  " << allValues.at(i) << " decrypted to : " << convertIntPlaintextEncodingToInt(ptValue) << endl;
 
 
 	}
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 	// // decrypt each result ciphertext
@@ -385,13 +436,13 @@ typedef Poly PolyType;
 int main(int argc, char *argv[]) {
 
 
-	vector<int> intputVectorOfIntsToMultiply = {2,3,2,3,2,3,2};
+	vector<int> intputVectorOfIntsToMultiply = {3,2,3,4,5,6};
 
 	int depth = 4;
 
 	int offset = 6;
 
-	int plaintextModulus = 4;
+	int plaintextModulus = 2;
 
 	int isBitEncode = 0;
 
@@ -412,11 +463,24 @@ int main(int argc, char *argv[]) {
 	try{
 
 
-		uint64_t ring = 4096;
-		BigInteger modulusBigInt = PolyType::Integer("536881153");
-		BigInteger rootOfUnityBigInt = PolyType::Integer("267934765");
-		usint relinWindow = 16;
-		float stDev = 4;
+		uint64_t ring = 1024*2;  // cyclotomic order!!! ring dimension =/ 2
+		// uint64_t ring = 128*4;  // cyclotomic order!!! ring dimension =/ 2
+// 4294946818
+// 4294967296		
+// 4294967295
+													  
+
+		// BigInteger modulusBigInt = PolyType::Integer("268441601");
+		// BigInteger rootOfUnityBigInt = PolyType::Integer("16947867");
+
+		// BigInteger modulusBigInt = PolyType::Integer("2147473409");
+		// BigInteger rootOfUnityBigInt = PolyType::Integer("256290069");
+
+		BigInteger modulusBigInt = PolyType::Integer("1073750017");
+		BigInteger rootOfUnityBigInt = PolyType::Integer("180790047");
+
+		usint relinWindow = 1;
+		float stDev = 10;
 
 		MODE mode = RLWE;
 
@@ -425,7 +489,6 @@ int main(int argc, char *argv[]) {
 		parms.reset( new typename PolyType::Params(ring,
 								modulusBigInt,
 								rootOfUnityBigInt));
-
 
 
 		cout << "Gen crypto context SHIELD" << endl;

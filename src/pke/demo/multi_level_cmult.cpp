@@ -371,9 +371,9 @@ typedef Poly PolyType;
 int main(int argc, char *argv[]) {
 
 
-	vector<int> intputVectorOfIntsToMultiply = {2,3,2,3,2,3,2};
+	vector<int> intputVectorOfIntsToMultiply = {2,3,4,5,6,7,8};
 
-	int depth = 4;
+	int depth = 5;
 
 	int offset = 6;
 
@@ -401,7 +401,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	else{
-		cout << "Must enter a scheme, one of: BV,FV,LTV" << endl;
+		cout << "Must enter a scheme, one of: BV,FV,LTV,SHIELD" << endl;
 		return -1;
 	}
 	
@@ -409,7 +409,30 @@ int main(int argc, char *argv[]) {
 	cout << "Gen crypto context " << schemeLabel <<endl;
 	try{
 
-		if(schemeLabel == "FV"){
+		if(schemeLabel == "SHIELD"){
+			
+			uint64_t ring = 4096;
+			BigInteger modulusBigInt = PolyType::Integer("73786976294843228161");
+			BigInteger rootOfUnityBigInt = PolyType::Integer("20767366467608675614");
+			usint relinWindow = 16;
+			float stDev = 4;
+
+			MODE mode = RLWE;
+
+			shared_ptr<typename PolyType::Params> parms;
+
+			parms.reset( new typename PolyType::Params(ring,
+									modulusBigInt,
+									rootOfUnityBigInt));
+
+
+
+			cout << "Gen crypto context SHIELD" << endl;
+			cryptoContext = CryptoContextFactory<PolyType>::genCryptoContextSHIELD(
+				parms, plaintextModulus, relinWindow, stDev, mode, depth);
+
+		}
+		else if(schemeLabel == "FV"){
 			
 			unsigned int numMults = depth;
 
@@ -429,9 +452,9 @@ int main(int argc, char *argv[]) {
 		}
 		else if(schemeLabel == "BV"){
 
-			uint64_t ring = 4096;
-			BigInteger modulusBigInt = PolyType::Integer("73786976294843228161");
-			BigInteger rootOfUnityBigInt = PolyType::Integer("20767366467608675614");
+			uint64_t ring = 4096*2;
+			BigInteger modulusBigInt = PolyType::Integer("4951760157141521099597905921");
+			BigInteger rootOfUnityBigInt = PolyType::Integer("3564831757471501252257916732");
 			usint relinWindow = 16;
 			float stDev = 4;
 
