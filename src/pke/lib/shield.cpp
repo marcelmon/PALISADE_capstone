@@ -115,6 +115,56 @@ namespace lbcrypto {
 
 
 
+		const shared_ptr<LPCryptoParametersSHIELD<Element>> cryptoParamsForError = shared_ptr<LPCryptoParametersSHIELD<Element>>(cryptoParams);
+		cryptoParamsForError->SetDistributionParameter(2);
+
+		const typename Element::DggType &dggForError = cryptoParamsForError->GetDiscreteGaussianGenerator();
+
+
+		/*
+			Demonstrates how the integer types are stored
+		*/
+		// BigInteger theFive("2147473409");
+
+		// cout << "the five before " << theFive << endl;
+
+		// cout << "the five msb before " << to_string(theFive.GetMSB()) << endl;
+
+		// cout << "and bits from least to most ";
+		// for (int i = 1; i <= theFive.GetMSB(); ++i)
+		//  {
+		//  	cout << to_string(theFive.GetBitAtIndex(i)) << " ";
+		//  } 
+
+		//  cout << endl;
+
+
+		// theFive = theFive << 1;
+
+		// cout << "the five after " << theFive << endl;
+
+		// cout << "the five msb after " << to_string(theFive.GetMSB()) << endl;
+
+		// cout << "and bits from least to most ";
+		// for (int i = 1; i <= theFive.GetMSB(); ++i)
+		//  {
+		//  	cout << to_string(theFive.GetBitAtIndex(i)) << " ";
+		//  } 
+
+		//  cout << endl;
+
+		// exit(1);
+
+
+
+
+
+
+
+
+
+
+
 
 
 		/*
@@ -188,7 +238,7 @@ namespace lbcrypto {
 		else
 			t = Element(tug, elementParams, Format::COEFFICIENT);
 
-		cout << "THE T NO neg " << t << endl;
+		// cout << "THE T NO neg " << t << endl;
 
 
 		
@@ -210,7 +260,9 @@ namespace lbcrypto {
 			
 		Element a(dug, elementParams, Format::COEFFICIENT);
 
-		Element e(dgg, elementParams, Format::COEFFICIENT);
+		// Element e(dgg, elementParams, Format::COEFFICIENT);
+
+		Element e(dggForError, elementParams, Format::COEFFICIENT);
 
 
 		
@@ -226,9 +278,11 @@ namespace lbcrypto {
 		
 		
 
-		// Element b = aTimesT + e;
+		
 
-		Element b = aTimesT;
+		// Element b = aTimesT;
+
+		Element b = aTimesT + e;
 
 
 
@@ -266,14 +320,14 @@ namespace lbcrypto {
 	{
 
 		/*
-			Is NX2
+			Ciphertext Is NX2 Matrix
 
 			1 2
 			3 4
 			5 6
 			7 8
 
-			is represented as vector:
+			is represented as vector in Palisade:
 
 			1 2 3 4 5 6 7 8
 
@@ -284,10 +338,15 @@ namespace lbcrypto {
 
 		const shared_ptr<typename Element::Params> elementParams = cryptoParams->GetElementParams();
 
-		const typename Element::DggType &dgg = cryptoParams->GetDiscreteGaussianGenerator();
+		// const typename Element::DggType &dgg = cryptoParams->GetDiscreteGaussianGenerator();
 
-		// Ternary uniform generator (not used here)
-			// typename Element::TugType tug;
+
+		const shared_ptr<LPCryptoParametersSHIELD<Element>> cryptoParamsForError = shared_ptr<LPCryptoParametersSHIELD<Element>>(cryptoParams);
+		cryptoParamsForError->SetDistributionParameter(2);
+
+		const typename Element::DggType &dggForError = cryptoParamsForError->GetDiscreteGaussianGenerator();
+
+
 
 		Element plaintext(ptxt, elementParams);
 		plaintext.SwitchFormat(); // switch to evaluation format
@@ -296,12 +355,11 @@ namespace lbcrypto {
 		typename Element::Integer theModulus =  elementParams->GetModulus();
 
 		int l = theModulus.GetMSB(); // equivalent to ceil(log[modulus])
-		
+
 		int N = 2*l; // ciphertext height (width will be 2)
 
 
 		// ciphertext is NX2 matrix of Element
-
 		if (doEncryption) {
 
 
@@ -322,28 +380,36 @@ namespace lbcrypto {
 				2
 				);
 
+			
+
+
+			// Matrix<Element> BDIMatrixIDENT = Matrix<Element>(
+			// 	[elementParams]() { return make_unique<Element>(elementParams, EVALUATION, true); },
+			// 	N, 
+			// 	N
+			// 	);
+
+			// BDIMatrixIDENT.Identity();
+
+			Element onePoly(elementParams, COEFFICIENT, true);
+			onePoly.SetValAtIndex(0, 1);
+			onePoly.SetFormat(EVALUATION);
+
+			// generates array of l polys with only first coefficients set
+			// set to 1, 2, 4, 8, ..., 2^(l-1)
+			std::vector<Element> base2Out = onePoly.PowersOfBase(1);
+
+			Element zeroElement(elementParams, EVALUATION, true);
 
 			for (int i = 0; i < N; ++i)
-			{	
-
-				Element power2Element(elementParams, COEFFICIENT, true);
-
-				// produces 1, 2, 4 ,8, ..  (2^[l] where l = {0,1,2,3,...})
-				power2Element.SetValAtIndex(0, 1 << (i%(N/2)));
-
-				Element zeroElement(elementParams, COEFFICIENT, true);
-				
-				power2Element.SwitchFormat();
-				zeroElement.SwitchFormat();
-
+			{
 				if(i < N/2){
-
-					BDIMatrix(i, 0) = power2Element;
-					BDIMatrix(i, 1) = zeroElement;
+					BDIMatrix(i, 0) = base2Out.at(i).Clone();
+					BDIMatrix(i, 1) = zeroElement.Clone();
 				}
 				else{
-					BDIMatrix(i, 0) = zeroElement;
-					BDIMatrix(i, 1) = power2Element;
+					BDIMatrix(i, 0) = zeroElement.Clone();
+					BDIMatrix(i, 1) = base2Out.at(i - N/2).Clone();
 				}
 			}
 
@@ -370,10 +436,9 @@ namespace lbcrypto {
 				}
 				randCoefficientPoly.SwitchFormat();
 
-				randCoefficientPolyMatrix(i, 0) = randCoefficientPoly;
+				randCoefficientPolyMatrix(i, 0) = randCoefficientPoly.Clone();
+
 			}
-
-
 
 			/*
 				Unpack public key from vector into matrix
@@ -385,8 +450,8 @@ namespace lbcrypto {
 				);
 
 			// publicKey : [b a]
-			publicKeyElementMatrix(0,0) = publicKey->GetPublicElements().at(0);
-			publicKeyElementMatrix(0,1) = publicKey->GetPublicElements().at(1);
+			publicKeyElementMatrix(0,0) = publicKey->GetPublicElements().at(0); // b
+			publicKeyElementMatrix(0,1) = publicKey->GetPublicElements().at(1); // a
 
 
 
@@ -394,8 +459,14 @@ namespace lbcrypto {
 				Generate an error matrix Nx2
 			*/
 			// error is a distributed gaussian sampled for all Nx2 elements
+			// Matrix<Element> errorMatrix = Matrix<Element>(
+			// 	[elementParams, dgg]() { return make_unique<Element> (dgg, elementParams, Format::EVALUATION); },
+			// 	N, 
+			// 	2
+			// 	);
+
 			Matrix<Element> errorMatrix = Matrix<Element>(
-				[elementParams, dgg]() { return make_unique<Element> (dgg, elementParams, Format::EVALUATION); },
+				[elementParams, dggForError]() { return make_unique<Element> (dggForError, elementParams, Format::EVALUATION); },
 				N, 
 				2
 				);
@@ -404,10 +475,9 @@ namespace lbcrypto {
 			/*
 				Generate the ciphertext
 			*/
-			// Matrix<Element> ciphertextMatrix = (plaintext * BDIMatrix) + (randCoefficientPolyMatrix * publicKeyElementMatrix) + errorMatrix;
+			Matrix<Element> ciphertextMatrix = (plaintext * BDIMatrix) + (randCoefficientPolyMatrix * publicKeyElementMatrix) + errorMatrix;
 
-
-			Matrix<Element> ciphertextMatrix = (plaintext * BDIMatrix) + (randCoefficientPolyMatrix * publicKeyElementMatrix);
+			// Matrix<Element> ciphertextMatrix = (plaintext * BDIMatrix) + (randCoefficientPolyMatrix * publicKeyElementMatrix);
 
 
 			/*
@@ -464,13 +534,9 @@ namespace lbcrypto {
 
 
 		typename Element::Integer theModulus =  privateKey->GetCryptoParameters()->GetElementParams()->GetModulus();
-
-		cout << "The modulus is : " << theModulus << endl;
 		
 		// # bits of security 
 		int l = theModulus.GetMSB();  // bit # starts at 1
-
-		cout << " l security bits are : " << l << endl;
 
 		// ciphertext height (width=2)
 		int N = 2*l;
@@ -565,7 +631,7 @@ namespace lbcrypto {
 		for (int i = 0; i < N/2; ++i)
 		{
 
-			decryptMultiplyResultsMatrix(i, 0).SwitchFormat();
+			decryptMultiplyResultsMatrix(i, 0).SetFormat(COEFFICIENT);
 
 			for (int j = 0; j < l; ++j)
 			{
@@ -575,7 +641,10 @@ namespace lbcrypto {
 
 				if(theBit > 0){
 					typename Element::Integer currentPolyCoefficient = finalPlaintext.GetValAtIndex(j);
-					finalPlaintext.SetValAtIndex(j, currentPolyCoefficient +  1 << (l - i - 1));
+
+					finalPlaintext.SetValAtIndex(j, currentPolyCoefficient +  (1 << (l - i - 1)));
+
+
 				}
 				
 				continue;
@@ -586,6 +655,8 @@ namespace lbcrypto {
 
 
 		cout << finalPlaintext << endl << "final pt" << endl;
+
+		// exit(1);
 		*plaintext = finalPlaintext;
 
 		return DecryptResult(plaintext->GetLength());
@@ -644,6 +715,8 @@ namespace lbcrypto {
 		}
 
 
+		double startTimeMult = currentDateTime();
+
 		const shared_ptr<LPCryptoParametersSHIELD<Element>> cryptoParams = std::dynamic_pointer_cast<LPCryptoParametersSHIELD<Element>>(ciphertext1->GetCryptoParameters());
 
 		const shared_ptr<typename Element::Params> elementParams = cryptoParams->GetElementParams();
@@ -652,6 +725,10 @@ namespace lbcrypto {
 
 		int l = theModulus.GetMSB(); // equivalent to ceil(log[modulus])
 		
+		////////////////
+		l = 31;
+
+
 		int N = 2*l; // ciphertext height (width will be 2)
 
 		
@@ -691,21 +768,42 @@ namespace lbcrypto {
 			N
 			);
 
+		
+
+
+		std::vector<double> allBaseDecomposeTimes;
+
+
+		double baseDecomposeStartTime = currentDateTime();
 		for (int i = 0; i < N; ++i)
-		{
+		{	
+			double startTimeBaseDecompose = currentDateTime();
+
 			std::vector<Element> baseDecomposeLeft = c1.at(i*2).BaseDecompose(relinWindow, true);
+
+			allBaseDecomposeTimes.push_back(currentDateTime() - startTimeBaseDecompose);
+
+
 			for (size_t j = 0; j < baseDecomposeLeft.size(); ++j)
 			{
 				c1MatrixWithBaseDecompose(i, j) =  std::move(baseDecomposeLeft.at(j));
 			}
 
+
+			startTimeBaseDecompose = currentDateTime();
+
 			std::vector<Element> baseDecomposeRight = c1.at(i*2 + 1).BaseDecompose(relinWindow, true);
+
+			allBaseDecomposeTimes.push_back(currentDateTime() - startTimeBaseDecompose);
+
+
 			for (size_t j = 0; j < baseDecomposeRight.size(); ++j)
 			{
 				c1MatrixWithBaseDecompose(i, baseDecomposeLeft.size() + j) = std::move(baseDecomposeRight.at(j));
 			}
 		}
 
+		double baseDecomposeTotalTime = currentDateTime() - baseDecomposeStartTime;
 
 		/*
 			Unpack c2 vector into matrix
@@ -716,20 +814,26 @@ namespace lbcrypto {
 			2
 			);
 
+		double unpackC2StartTime = currentDateTime();
 		for (int i = 0; i < N; ++i)
 		{
 			c2Matrix(i, 0) = c2.at(i * 2);
 			c2Matrix(i, 1) = c2.at((i*2) + 1);
 		}
+		double unpackC2TotalTime = currentDateTime() - unpackC2StartTime;
 
 
 		/*
 			Perform matrix mult
 		*/
-		Matrix<Element> finalMatrixMult = c1MatrixWithBaseDecompose * c2Matrix;
 
+		double matrixMultStartTime = currentDateTime();
+		Matrix<Element> finalMatrixMult = c1MatrixWithBaseDecompose * c2Matrix;
+		double matrixMulttotalTime = currentDateTime() - matrixMultStartTime;
 
 		// pack resultant matrix into expected vector
+
+		double repackMatrixStartTime = currentDateTime();
 		std::vector<Element> multResult;
 		for (int i = 0; i < N; ++i)
 		{
@@ -738,6 +842,28 @@ namespace lbcrypto {
 		}
 
 		newCiphertext->SetElements(std::move(multResult));
+		double repackMatrixTotalTime = currentDateTime() - repackMatrixStartTime;
+
+		double endTimeMult = currentDateTime() - startTimeMult;
+	
+		cout << "TOTAL MULT TIME : " << endTimeMult << endl;
+
+		double totalBaseDecomposeTime = 0;
+		for (unsigned int i = 0; i < allBaseDecomposeTimes.size(); ++i)
+		{
+			totalBaseDecomposeTime += allBaseDecomposeTimes.at(i);
+		}
+		
+		cout << "TOTAL BASE DECOMPOSE TIME : " << totalBaseDecomposeTime << endl;
+
+		cout << "TOTAL BASE DECOMPOSE LOOP TIME : " << baseDecomposeTotalTime << endl;
+
+		cout << "Total unpack c2 time : " << unpackC2TotalTime << endl;
+
+		cout << "Total matrix mult time : " << matrixMulttotalTime << endl;
+
+		cout << "Total matrix repack time : " << repackMatrixTotalTime << endl;
+
 
 		return newCiphertext;
 
