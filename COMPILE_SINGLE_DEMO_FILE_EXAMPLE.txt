@@ -1,6 +1,6 @@
 
 
-to compile shield.cpp changes an include in the Palisade library
+# to compile shield.cpp changes an include in the Palisade library
 
 	g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/shield-vectorarray-impl.o src/pke/lib/shield-vectorarray-impl.cpp
 
@@ -13,7 +13,7 @@ to compile shield.cpp changes an include in the Palisade library
 
 
 
-to compile src/pke/bin/demo/testing_shield_encryption_decryption.cpp for testing shield
+# to compile src/pke/bin/demo/testing_shield_encryption_decryption.cpp for testing shield
 
 	g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/testing_shield_encryption_decryption.o src/pke/demo/testing_shield_encryption_decryption.cpp
 
@@ -27,12 +27,85 @@ to compile src/pke/bin/demo/testing_shield_encryption_decryption.cpp for testing
 
 
 
+# to compile src/pke/bin/demo/parameterized_benchmarking_palisade.cpp for testing shield
+
+	g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/parameterized_benchmarking_palisade.o src/pke/demo/parameterized_benchmarking_palisade.cpp
+
+	g++ -std=gnu++11 -fPIC -o bin/demo/pke/parameterized_benchmarking_palisade src/pke/bin/demo/parameterized_benchmarking_palisade.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp
+
+	./bin/demo/pke/parameterized_benchmarking_palisade
 
 
 
 
 
 
+
+
+
+
+
+
+
+# to compile shield.cpp changes an include in the Palisade library
+
+	g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/shield-vectorarray-impl.o src/pke/lib/shield-vectorarray-impl.cpp
+
+	g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/lib/shield-vector-impl.o src/pke/lib/shield-vector-impl.cpp
+
+
+	g++ -std=gnu++11 -fPIC -fPIC -shared -Wl,--export-dynamic -fopenmp -o bin/lib/libPALISADEpke.so src/pke/bin/lib/fv-vectorarray-impl.o src/pke/bin/lib/ltv-vector-impl.o src/pke/bin/lib/bv-vector-impl.o src/pke/bin/lib/rationalct-vector-impl.o src/pke/bin/lib/cryptotiming-impl.o src/pke/bin/lib/shield-vectorarray-impl.o src/pke/bin/lib/ciphertext-vector-impl.o src/pke/bin/lib/rationalct-vectorarray-impl.o src/pke/bin/lib/fv-vector-impl.o src/pke/bin/lib/ciphertext-vectorarray-impl.o src/pke/bin/lib/pubkeylp-vectorarray-impl.o src/pke/bin/lib/nullscheme-vectorarray-impl.o src/pke/bin/lib/bv-vectorarray-impl.o src/pke/bin/lib/cryptocontext-vectorarray-impl.o src/pke/bin/lib/stst-vector-impl.o src/pke/bin/lib/pubkeylp-vector-impl.o src/pke/bin/lib/shield-vector-impl.o src/pke/bin/lib/cryptocontextparametersets-impl.o src/pke/bin/lib/cryptocontext-vector-impl.o src/pke/bin/lib/cryptocontexthelper-impl.o src/pke/bin/lib/nullscheme-vector-impl.o src/pke/bin/lib/ltv-vectorarray-impl.o src/pke/bin/lib/matrixser-impl.o src/pke/bin/lib/stst-vectorarray-impl.o -Lbin/lib -lPALISADEcore
+
+
+	
+	./bin/demo/pke/benchmark_cmult_cadd_times
+
+
+
+
+
+# to compile src/pke/bin/demo/benchmark_cmult_cadd_times.cpp for testing shield
+
+	g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/benchmark_cmult_cadd_times.o src/pke/demo/benchmark_cmult_cadd_times.cpp
+
+	g++ -std=gnu++11 -fPIC -o bin/demo/pke/benchmark_cmult_cadd_times src/pke/bin/demo/benchmark_cmult_cadd_times.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp
+
+	./bin/demo/pke/benchmark_cmult_cadd_times
+
+
+
+
+
+
+
+
+
+
+# to compile src/pke/bin/demo/demo-test-mult.cpp
+
+	g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/demo/demo-test-mult.o  src/pke/demo/demo-test-mult.cpp
+
+	g++ -std=gnu++11 -fPIC -o bin/demo/pke/demo-test-mult src/pke/demo/demo-test-mult.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp
+
+	./bin/demo/pke/demo-test-mult
+
+
+
+
+
+
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o bin/build/pke/demo/demo-test-mult.o src/pke/demo/demo-test-mult.cpp
+
+g++ -std=gnu++11 -fPIC -o bin/demo/pke/demo-test-mult bin/build/pke/demo/demo-test-mult.o -Lbin/lib -pthread -fopenmp third-party/lib/libgmp.so -lgomp  -lPALISADEpke -lPALISADEcore third-party/lib/libntl.so third-party/lib/libgmp.so
+
+
+
+
+
+
+g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o bin/build/pke/demo/demo-test-mult.o src/pke/demo/demo-test-mult.cpp
+
+g++ -std=gnu++11 -fPIC -o bin/demo/pke/demo-test-mult bin/build/pke/demo/demo-test-mult.o -Lbin/lib -pthread -fopenmp third-party/lib/libgmp.so -lgomp  -lPALISADEpke -lPALISADEcore third-party/lib/libntl.so third-party/lib/libgmp.so
 
 
 

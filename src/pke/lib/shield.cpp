@@ -116,7 +116,7 @@ namespace lbcrypto {
 
 
 		const shared_ptr<LPCryptoParametersSHIELD<Element>> cryptoParamsForError = shared_ptr<LPCryptoParametersSHIELD<Element>>(cryptoParams);
-		cryptoParamsForError->SetDistributionParameter(2);
+		cryptoParamsForError->SetDistributionParameter(3);
 
 		const typename Element::DggType &dggForError = cryptoParamsForError->GetDiscreteGaussianGenerator();
 
@@ -125,6 +125,7 @@ namespace lbcrypto {
 			Demonstrates how the integer types are stored
 		*/
 		// BigInteger theFive("2147473409");
+
 
 		// cout << "the five before " << theFive << endl;
 
@@ -211,7 +212,9 @@ namespace lbcrypto {
 		/*
 			Method to get root of unity in src/core/math/nbtheory.cpp
 		*/
-		// cout << lbcrypto::RootOfUnity<BigInteger>(2*1024, elementParams->GetModulus()) << endl;
+
+		// cout << " A ROOT OF UNITY " << endl;
+		// cout << lbcrypto::RootOfUnity<BigInteger>(2*1024, 2147352577) << endl;
 
 		// exit(1);
 
@@ -342,7 +345,7 @@ namespace lbcrypto {
 
 
 		const shared_ptr<LPCryptoParametersSHIELD<Element>> cryptoParamsForError = shared_ptr<LPCryptoParametersSHIELD<Element>>(cryptoParams);
-		cryptoParamsForError->SetDistributionParameter(2);
+		cryptoParamsForError->SetDistributionParameter(3);
 
 		const typename Element::DggType &dggForError = cryptoParamsForError->GetDiscreteGaussianGenerator();
 
@@ -436,7 +439,7 @@ namespace lbcrypto {
 				}
 				randCoefficientPoly.SwitchFormat();
 
-				randCoefficientPolyMatrix(i, 0) = randCoefficientPoly.Clone();
+				randCoefficientPolyMatrix(i, 0) = std::move(randCoefficientPoly);
 
 			}
 
@@ -498,8 +501,8 @@ namespace lbcrypto {
 
 			for (int i = 0; i < N; ++i)
 			{
-				ciphertextVector.push_back(ciphertextMatrix(i,0));
-				ciphertextVector.push_back(ciphertextMatrix(i,1));
+				ciphertextVector.push_back(std::move(ciphertextMatrix(i,0)));
+				ciphertextVector.push_back(std::move(ciphertextMatrix(i,1)));
 			}
 
 			ciphertext->SetElements(std::move(ciphertextVector));
@@ -620,6 +623,148 @@ namespace lbcrypto {
 
 
 
+
+		typename Element::Integer averagingSum("214735257777777777777777");
+
+
+		averagingSum = 0;
+		decryptMultiplyResultsMatrix(0, 0).SetFormat(COEFFICIENT);
+
+		int counter = 0;
+		for (int j = 0; j < l; ++j)
+		{
+			// for (unsigned int i = 1; i < cryptoParams->GetElementParams()->GetRingDimension(); ++i)
+			for (int i = 1; i < l; ++i)
+			{
+				decryptMultiplyResultsMatrix(j, 0).SetFormat(COEFFICIENT);
+				averagingSum += decryptMultiplyResultsMatrix(j, 0).GetValAtIndex(i);
+				counter++;
+			}
+		}
+			
+
+		// cout << "AVERGING SUM : " << averagingSum << endl;
+
+		typename Element::Integer finalAverage(averagingSum/counter);
+
+		cout << "FINAL AVERAGE NOISE : " << finalAverage << endl;
+
+
+
+
+		/*
+			Top row ONLY
+		*/
+
+		// cout << "TOP ROW POLY " << endl;
+		// for (int i = 0; i < l; ++i)
+		// {
+		// 	for (int j = 0; j < l; ++j)
+		// 	{
+
+
+		// 		typename Element::Integer theBit = decryptMultiplyResultsMatrix(0, 0).GetValAtIndex(j).GetBitAtIndex(l - i);
+
+		// 		// typename Element::Integer theBit = decryptMultiplyResultsMatrix(0, 0).GetValAtIndex(l - i - 1).GetBitAtIndex(j + 1);
+		// 		cout << theBit << " ";
+
+		// 		continue;
+
+		// 	}
+		// 	cout << endl;
+		// }
+
+		// cout << endl << endl;
+
+
+		// cout << " FIRST POLY COEFFICIENT TOP ROW " << endl;
+		// for (int i = 0; i < l; ++i)
+		// {
+
+		// 	typename Element::Integer theBit = decryptMultiplyResultsMatrix(0, 0).GetValAtIndex(0).GetBitAtIndex(l - i);
+
+		// 	cout << theBit << " ";	
+			
+		// }
+
+		// cout << endl << endl;
+
+
+		cout << "BEFORE REMOVING NOISE" << endl;
+
+		for (int i = 0; i < N/2; ++i)
+		{
+
+			decryptMultiplyResultsMatrix(i, 0).SetFormat(COEFFICIENT);
+			
+			for (int j = 0; j < l; ++j)
+			{
+
+				typename Element::Integer theBit = decryptMultiplyResultsMatrix(i, 0).GetValAtIndex(j).GetBitAtIndex(l);
+				cout << theBit << " ";
+				
+				continue;
+
+			}
+			cout << endl;
+		}
+
+		cout << endl << endl;
+
+
+		cout << "REMOVING THE AVERAGE NOISE" << endl;
+		for (int i = 0; i < N/2; ++i)
+		{
+			decryptMultiplyResultsMatrix(i, 0).SetFormat(COEFFICIENT);
+
+			// decryptMultiplyResultsMatrix(i, 0) -= (theModulus - (finalAverage + 1));
+
+			// decryptMultiplyResultsMatrix(i, 0) -= (theModulus - (finalAverage));
+
+			// decryptMultiplyResultsMatrix(i, 0) -= (theModulus - (finalAverage - 1));
+
+
+
+			// decryptMultiplyResultsMatrix(i, 0) -= (theModulus + (finalAverage + 1)); // <<<<
+
+			// decryptMultiplyResultsMatrix(i, 0) -= (theModulus + (finalAverage)); // <<<<
+
+			// decryptMultiplyResultsMatrix(i, 0) -= (theModulus + (finalAverage - 1)); // <<<<<
+
+
+
+			// decryptMultiplyResultsMatrix(i, 0) += (theModulus - (finalAverage + 1));
+
+			// decryptMultiplyResultsMatrix(i, 0) += (theModulus - (finalAverage));
+
+			// decryptMultiplyResultsMatrix(i, 0) += (theModulus - (finalAverage - 1));
+
+
+
+
+			// decryptMultiplyResultsMatrix(i, 0) += (theModulus + (finalAverage + 1));
+
+			// decryptMultiplyResultsMatrix(i, 0) += (theModulus + (finalAverage));
+
+			// decryptMultiplyResultsMatrix(i, 0) += (theModulus + (finalAverage - 1));
+
+
+
+
+			// decryptMultiplyResultsMatrix(i, 0) -= (finalAverage + 1);
+
+			// decryptMultiplyResultsMatrix(i, 0) -= (finalAverage);
+
+			decryptMultiplyResultsMatrix(i, 0) -= (finalAverage - 1); // <<<<<
+
+
+			// decryptMultiplyResultsMatrix(i, 0) += (finalAverage + 1);
+
+			// decryptMultiplyResultsMatrix(i, 0) += (finalAverage);
+
+			// decryptMultiplyResultsMatrix(i, 0) += (finalAverage - 1);
+
+		}
 		/*
 			Build resultant poly from most significant bits of first l elements
 
@@ -632,13 +777,21 @@ namespace lbcrypto {
 		{
 
 			decryptMultiplyResultsMatrix(i, 0).SetFormat(COEFFICIENT);
-
+			
 			for (int j = 0; j < l; ++j)
 			{
 
-				typename Element::Integer theBit = decryptMultiplyResultsMatrix(i, 0).GetValAtIndex(j).GetBitAtIndex(l);
-				cout << theBit << " ";
+				
 
+				typename Element::Integer theBit = decryptMultiplyResultsMatrix(i, 0).GetValAtIndex(j).GetBitAtIndex(l);
+				// cout << theBit << " ";
+
+				if(theBit == 1){
+					cout << "0 ";
+				}
+				else{
+					cout << "1 ";
+				}
 				if(theBit > 0){
 					typename Element::Integer currentPolyCoefficient = finalPlaintext.GetValAtIndex(j);
 
@@ -687,7 +840,7 @@ namespace lbcrypto {
 	        finalElements.push_back(cipherText1Elements[i] + cipherText2Elements[i]);
 	    }
 
-	    newCiphertext->SetElements(finalElements);
+	    newCiphertext->SetElements(std::move(finalElements));
 
 	    return newCiphertext;
 
@@ -724,9 +877,6 @@ namespace lbcrypto {
 		typename Element::Integer theModulus =  elementParams->GetModulus();
 
 		int l = theModulus.GetMSB(); // equivalent to ceil(log[modulus])
-		
-		////////////////
-		l = 31;
 
 
 		int N = 2*l; // ciphertext height (width will be 2)
@@ -748,7 +898,6 @@ namespace lbcrypto {
 
 		const std::vector<Element> &c2 = ciphertext2->GetElements();
 
-		std::vector<Element> cNew;
 
 		// cout << "going in N " << N << endl;
 
@@ -757,6 +906,103 @@ namespace lbcrypto {
 			cout << "IS NOT RIGHT TEMPLATE OH NOES!" << endl;
 			exit(1);
 		}
+
+
+
+
+
+
+		// double MANUALbaseDecomposeStartTime = currentDateTime();
+
+		// Matrix<Element> c1MatrixWithBaseDecomposeManual = Matrix<Element>(
+		// 	[elementParams]() { return make_unique<Element>(elementParams, EVALUATION, true); },
+		// 	N, 
+		// 	N
+		// 	);
+		
+		// std::vector<Element> c1Coefficient = std::vector<Element>();
+
+
+		// for(unsigned int i = 0; i < c1.size(); ++i)
+		// {
+		// 	Element coeficientRepresentation = Element(c1.at(i));
+		// 	coeficientRepresentation.SetFormat(COEFFICIENT);
+		// 	c1Coefficient.push_back(std::move(coeficientRepresentation));
+		// }
+
+		// unsigned int ringDim = cryptoParams->GetElementParams()->GetRingDimension();
+
+		// auto bitDecomposedCoefficientRowC1 = [c1, l, ringDim, elementParams](int position) -> std::vector<Element> { 
+		// 	std::vector<Element> newRow = vector<Element>();
+		// 	Element forCoef = Element(c1.at(position));
+		// 	forCoef.SetFormat(COEFFICIENT);
+			
+		// 	int theBit;
+
+		// 	Element newElement;
+
+		// 	for (int j = 1; j <= l; ++j) // go through each bit
+		// 	{
+		// 		newElement = Element(elementParams, COEFFICIENT, true);
+		// 		for (unsigned int k = 0; k < ringDim; ++k) { // go through each ring coefficient
+		// 			theBit = forCoef.GetValAtIndex(k).GetBitAtIndex(j);
+		// 			if(theBit > 0){
+		// 				newElement.SetValAtIndex(k, 1 << (j-1));
+		// 			}
+		// 		}
+		// 		newElement.SetFormat(EVALUATION);
+		// 		newRow.push_back(std::move(newElement));
+		// 	}
+
+		// 	return newRow;
+		// };
+
+
+		// Element forCoef;
+		// Element newElement;
+
+		// for (int i = 0; i < N; ++i)
+		// {
+
+		// 	forCoef = Element(c1.at(i * 2));
+		// 	forCoef.SwitchFormat();
+
+		// 	for (int j = 1; j <= l; ++j)
+		// 	{
+
+		// 		newElement = Element(elementParams, COEFFICIENT, true);
+		// 		for (unsigned int k = 0; k < cryptoParams->GetElementParams()->GetRingDimension(); ++k)
+		// 		{
+		// 			if(forCoef.GetValAtIndex(k).GetBitAtIndex(j) != 0){
+		// 				newElement.SetValAtIndex(k, 1 << (j-1));
+		// 			}
+		// 		}
+		// 		newElement.SetFormat(EVALUATION);
+		// 		c1MatrixWithBaseDecomposeManual(i, j - 1) = std::move(newElement);
+
+		// 		// c1MatrixWithBaseDecomposeManual(i, j - 1) = std::move(newRow.at(j-1));
+		// 		// c1MatrixWithBaseDecomposeManual(i, j + l - 1) = std::move(newRow2.at(j-1));
+		// 	}
+
+		// 	forCoef = Element(c1.at((i * 2) + 1));
+		// 	forCoef.SwitchFormat();
+
+		// 	for (int j = 1; j <= l; ++j)
+		// 	{
+		// 		newElement = Element(elementParams, COEFFICIENT, true);
+		// 		for (unsigned int k = 0; k < cryptoParams->GetElementParams()->GetRingDimension(); ++k)
+		// 		{
+		// 			if(forCoef.GetValAtIndex(k).GetBitAtIndex(j) != 0){
+		// 				newElement.SetValAtIndex(k, 1 << (j-1));
+		// 			}
+		// 		}
+		// 		newElement.SetFormat(EVALUATION);
+		// 		c1MatrixWithBaseDecomposeManual(i, j + l - 1) = std::move(newElement);
+		// 	}
+		// }
+
+		// double MANUALbaseDecomposeTotalTime = currentDateTime() - MANUALbaseDecomposeStartTime;
+
 
 
 		/*
@@ -779,10 +1025,10 @@ namespace lbcrypto {
 		{	
 			double startTimeBaseDecompose = currentDateTime();
 
-			std::vector<Element> baseDecomposeLeft = c1.at(i*2).BaseDecompose(relinWindow, true);
+			// base decompose will automatically inverse NTT to coefficient then return in eval mode (as true is passed)
+			std::vector<Element> baseDecomposeLeft = std::move(c1.at(i*2).BaseDecompose(relinWindow, true));
 
 			allBaseDecomposeTimes.push_back(currentDateTime() - startTimeBaseDecompose);
-
 
 			for (size_t j = 0; j < baseDecomposeLeft.size(); ++j)
 			{
@@ -792,14 +1038,14 @@ namespace lbcrypto {
 
 			startTimeBaseDecompose = currentDateTime();
 
-			std::vector<Element> baseDecomposeRight = c1.at(i*2 + 1).BaseDecompose(relinWindow, true);
+			// base decompose will automatically inverse NTT to coefficient then return in eval mode (as true is passed)
+			std::vector<Element> baseDecomposeRight = std::move(c1.at(i*2 + 1).BaseDecompose(relinWindow, true));
 
 			allBaseDecomposeTimes.push_back(currentDateTime() - startTimeBaseDecompose);
 
-
 			for (size_t j = 0; j < baseDecomposeRight.size(); ++j)
 			{
-				c1MatrixWithBaseDecompose(i, baseDecomposeLeft.size() + j) = std::move(baseDecomposeRight.at(j));
+				c1MatrixWithBaseDecompose(i, baseDecomposeLeft.size() + j) = std::move(baseDecomposeRight.at(j)); 
 			}
 		}
 
@@ -826,6 +1072,28 @@ namespace lbcrypto {
 		/*
 			Perform matrix mult
 		*/
+
+		// double manualMatrixMultStartTime = currentDateTime();
+
+		// double manualMatrixMultCREATEStartTime = currentDateTime();
+		// Matrix<Element> result = Matrix<Element>(
+		// 	[elementParams]() { return make_unique<Element>(elementParams, EVALUATION, true); },
+		// 	N, 
+		// 	2
+		// 	);
+		// double manualMatrixMultCREATETotalTime = currentDateTime() - manualMatrixMultCREATEStartTime;
+
+		// for (int row = 0; row < N; ++row) { // N rows in first matrix
+		// 	for (int i = 0; i < N; ++i) { // N cols in first matrix (bit decompose matrix)
+		// 		for (int col = 0; col < 2; ++col) {
+		// 			result(row,col) += c1MatrixWithBaseDecompose(row, i) * c2Matrix(i, col);
+		// 	    }
+		// 	}
+	 //    }
+
+	 //    double manualMatrixMultTotalTime = currentDateTime() - manualMatrixMultStartTime;
+
+
 
 		double matrixMultStartTime = currentDateTime();
 		Matrix<Element> finalMatrixMult = c1MatrixWithBaseDecompose * c2Matrix;
@@ -864,6 +1132,14 @@ namespace lbcrypto {
 
 		cout << "Total matrix repack time : " << repackMatrixTotalTime << endl;
 
+		// cout << "TOTAL MANUAL BIT BECOMPOSE TIME : " << MANUALbaseDecomposeTotalTime << endl;
+
+		// cout << "Total MANUAL matrix mult time : " << manualMatrixMultTotalTime << endl;
+
+		// cout << "Total MANUAL matrix mult CREATE time : " << manualMatrixMultCREATETotalTime << endl;
+
+		
+		cout << endl;
 
 		return newCiphertext;
 

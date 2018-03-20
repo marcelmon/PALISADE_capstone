@@ -436,13 +436,16 @@ typedef Poly PolyType;
 int main(int argc, char *argv[]) {
 
 
-	vector<int> intputVectorOfIntsToMultiply = {3,2,3,4,5,6};
+	// vector<int> intputVectorOfIntsToMultiply = {7,2,3,4,5,6};
+
+
+	vector<int> intputVectorOfIntsToMultiply = {7,0,3,4,5,6,6,4,32,2};
 
 	int depth = 4;
 
 	int offset = 6;
 
-	int plaintextModulus = 2;
+	int plaintextModulus = 1024;
 
 	int isBitEncode = 0;
 
@@ -463,21 +466,34 @@ int main(int argc, char *argv[]) {
 	try{
 
 
-		uint64_t ring = 1024*2;  // cyclotomic order!!! ring dimension =/ 2
-		// uint64_t ring = 128*4;  // cyclotomic order!!! ring dimension =/ 2
+		uint64_t cyclotomicOrder = 1024*2;  // cyclotomic order!!! ring dimension = cyclotomicOrder/ 2
+		// uint64_t cyclotomicOrder = 128*4;  // cyclotomic order!!! ring dimension = cyclotomicOrder/ 2
 // 4294946818
 // 4294967296		
 // 4294967295
 													  
+// 2147352577
 
+//2147352577
+// 2147352577
+// 461230749		
 		// BigInteger modulusBigInt = PolyType::Integer("268441601");
 		// BigInteger rootOfUnityBigInt = PolyType::Integer("16947867");
 
+		// 0x7FFE001
+		// 1111 1111 1111 1100 0000 0000 001
+ 		// 0111 1111 1111 1110 0000 0000 0001
+
+													  // 134209537
 		// BigInteger modulusBigInt = PolyType::Integer("2147473409");
 		// BigInteger rootOfUnityBigInt = PolyType::Integer("256290069");
 
-		BigInteger modulusBigInt = PolyType::Integer("1073750017");
-		BigInteger rootOfUnityBigInt = PolyType::Integer("180790047");
+
+		BigInteger modulusBigInt = PolyType::Integer("2147352577");
+		BigInteger rootOfUnityBigInt = PolyType::Integer("461230749");
+
+		// BigInteger modulusBigInt = PolyType::Integer("1073750017");
+		// BigInteger rootOfUnityBigInt = PolyType::Integer("180790047");
 
 		usint relinWindow = 1;
 		float stDev = 10;
@@ -486,7 +502,7 @@ int main(int argc, char *argv[]) {
 
 		shared_ptr<typename PolyType::Params> parms;
 
-		parms.reset( new typename PolyType::Params(ring,
+		parms.reset( new typename PolyType::Params(cyclotomicOrder,
 								modulusBigInt,
 								rootOfUnityBigInt));
 
