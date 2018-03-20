@@ -116,7 +116,7 @@ namespace lbcrypto {
 
 
 		const shared_ptr<LPCryptoParametersSHIELD<Element>> cryptoParamsForError = shared_ptr<LPCryptoParametersSHIELD<Element>>(cryptoParams);
-		cryptoParamsForError->SetDistributionParameter(3);
+		cryptoParamsForError->SetDistributionParameter(0);
 
 		const typename Element::DggType &dggForError = cryptoParamsForError->GetDiscreteGaussianGenerator();
 
@@ -345,7 +345,7 @@ namespace lbcrypto {
 
 
 		const shared_ptr<LPCryptoParametersSHIELD<Element>> cryptoParamsForError = shared_ptr<LPCryptoParametersSHIELD<Element>>(cryptoParams);
-		cryptoParamsForError->SetDistributionParameter(3);
+		cryptoParamsForError->SetDistributionParameter(0);
 
 		const typename Element::DggType &dggForError = cryptoParamsForError->GetDiscreteGaussianGenerator();
 
@@ -647,7 +647,7 @@ namespace lbcrypto {
 
 		typename Element::Integer finalAverage(averagingSum/counter);
 
-		cout << "FINAL AVERAGE NOISE : " << finalAverage << endl;
+		// cout << "FINAL AVERAGE NOISE : " << finalAverage << endl;
 
 
 
@@ -690,29 +690,51 @@ namespace lbcrypto {
 		// cout << endl << endl;
 
 
-		cout << "BEFORE REMOVING NOISE" << endl;
+		// cout << "BEFORE REMOVING NOISE" << endl;
 
-		for (int i = 0; i < N/2; ++i)
-		{
 
-			decryptMultiplyResultsMatrix(i, 0).SetFormat(COEFFICIENT);
+		// /*
+		// 	Build resultant poly from most significant bits of first l elements
+
+		// 	The bits at element i=l-1 are the least significant, so the amount to add is  1 for each coefficient
+		// 	The amount to add at position i=0 is 1*2^(l-1)
+		// */
+		// Poly finalPlaintextBeforeRemovingNoise(privateKey->GetCryptoParameters()->GetElementParams(), COEFFICIENT, true);
+
+
+		// for (int i = 0; i < N/2; ++i)
+		// {
+
+		// 	decryptMultiplyResultsMatrix(i, 0).SetFormat(COEFFICIENT);
 			
-			for (int j = 0; j < l; ++j)
-			{
+		// 	for (int j = 0; j < l; ++j)
+		// 	{
 
-				typename Element::Integer theBit = decryptMultiplyResultsMatrix(i, 0).GetValAtIndex(j).GetBitAtIndex(l);
-				cout << theBit << " ";
+		// 		typename Element::Integer theBit = decryptMultiplyResultsMatrix(i, 0).GetValAtIndex(j).GetBitAtIndex(l);
+		// 		cout << theBit << " ";
 				
-				continue;
 
-			}
-			cout << endl;
-		}
+		// 		if(theBit > 0){
+		// 			typename Element::Integer currentPolyCoefficient = finalPlaintext.GetValAtIndex(j);
 
-		cout << endl << endl;
+		// 			finalPlaintextBeforeRemovingNoise.SetValAtIndex(j, currentPolyCoefficient +  (1 << (l - i - 1)));
 
 
-		cout << "REMOVING THE AVERAGE NOISE" << endl;
+		// 		}
+
+		// 		continue;
+
+		// 	}
+		// 	cout << endl;
+		// }
+
+		// cout << endl << endl;
+
+		// *plaintext = finalPlaintextBeforeRemovingNoise;
+
+		// return DecryptResult(plaintext->GetLength());
+
+
 		for (int i = 0; i < N/2; ++i)
 		{
 			decryptMultiplyResultsMatrix(i, 0).SetFormat(COEFFICIENT);
@@ -780,18 +802,22 @@ namespace lbcrypto {
 			
 			for (int j = 0; j < l; ++j)
 			{
-
+				if(j >= 5){
+					break;
+				}
 				
 
 				typename Element::Integer theBit = decryptMultiplyResultsMatrix(i, 0).GetValAtIndex(j).GetBitAtIndex(l);
-				// cout << theBit << " ";
 
-				if(theBit == 1){
-					cout << "0 ";
-				}
-				else{
-					cout << "1 ";
-				}
+
+				// if(theBit == 1){
+				// 	cout << "0 ";
+				// }
+				// else{
+				// 	cout << "1 ";
+				// }
+
+
 				if(theBit > 0){
 					typename Element::Integer currentPolyCoefficient = finalPlaintext.GetValAtIndex(j);
 
@@ -803,11 +829,11 @@ namespace lbcrypto {
 				continue;
 
 			}
-			cout << endl;
+			// cout << endl;
 		}
 
 
-		cout << finalPlaintext << endl << "final pt" << endl;
+		// cout << finalPlaintext << endl << "final pt" << endl;
 
 		// exit(1);
 		*plaintext = finalPlaintext;
@@ -868,7 +894,7 @@ namespace lbcrypto {
 		}
 
 
-		double startTimeMult = currentDateTime();
+		// double startTimeMult = currentDateTime();
 
 		const shared_ptr<LPCryptoParametersSHIELD<Element>> cryptoParams = std::dynamic_pointer_cast<LPCryptoParametersSHIELD<Element>>(ciphertext1->GetCryptoParameters());
 
@@ -1017,18 +1043,18 @@ namespace lbcrypto {
 		
 
 
-		std::vector<double> allBaseDecomposeTimes;
+		// std::vector<double> allBaseDecomposeTimes;
 
 
-		double baseDecomposeStartTime = currentDateTime();
+		// double baseDecomposeStartTime = currentDateTime();
 		for (int i = 0; i < N; ++i)
 		{	
-			double startTimeBaseDecompose = currentDateTime();
+			// double startTimeBaseDecompose = currentDateTime();
 
 			// base decompose will automatically inverse NTT to coefficient then return in eval mode (as true is passed)
 			std::vector<Element> baseDecomposeLeft = std::move(c1.at(i*2).BaseDecompose(relinWindow, true));
 
-			allBaseDecomposeTimes.push_back(currentDateTime() - startTimeBaseDecompose);
+			// allBaseDecomposeTimes.push_back(currentDateTime() - startTimeBaseDecompose);
 
 			for (size_t j = 0; j < baseDecomposeLeft.size(); ++j)
 			{
@@ -1036,12 +1062,12 @@ namespace lbcrypto {
 			}
 
 
-			startTimeBaseDecompose = currentDateTime();
+			// startTimeBaseDecompose = currentDateTime();
 
 			// base decompose will automatically inverse NTT to coefficient then return in eval mode (as true is passed)
 			std::vector<Element> baseDecomposeRight = std::move(c1.at(i*2 + 1).BaseDecompose(relinWindow, true));
 
-			allBaseDecomposeTimes.push_back(currentDateTime() - startTimeBaseDecompose);
+			// allBaseDecomposeTimes.push_back(currentDateTime() - startTimeBaseDecompose);
 
 			for (size_t j = 0; j < baseDecomposeRight.size(); ++j)
 			{
@@ -1049,7 +1075,7 @@ namespace lbcrypto {
 			}
 		}
 
-		double baseDecomposeTotalTime = currentDateTime() - baseDecomposeStartTime;
+		// double baseDecomposeTotalTime = currentDateTime() - baseDecomposeStartTime;
 
 		/*
 			Unpack c2 vector into matrix
@@ -1060,13 +1086,13 @@ namespace lbcrypto {
 			2
 			);
 
-		double unpackC2StartTime = currentDateTime();
+		// double unpackC2StartTime = currentDateTime();
 		for (int i = 0; i < N; ++i)
 		{
 			c2Matrix(i, 0) = c2.at(i * 2);
 			c2Matrix(i, 1) = c2.at((i*2) + 1);
 		}
-		double unpackC2TotalTime = currentDateTime() - unpackC2StartTime;
+		// double unpackC2TotalTime = currentDateTime() - unpackC2StartTime;
 
 
 		/*
@@ -1095,13 +1121,13 @@ namespace lbcrypto {
 
 
 
-		double matrixMultStartTime = currentDateTime();
+		// double matrixMultStartTime = currentDateTime();
 		Matrix<Element> finalMatrixMult = c1MatrixWithBaseDecompose * c2Matrix;
-		double matrixMulttotalTime = currentDateTime() - matrixMultStartTime;
+		// double matrixMulttotalTime = currentDateTime() - matrixMultStartTime;
 
 		// pack resultant matrix into expected vector
 
-		double repackMatrixStartTime = currentDateTime();
+		// double repackMatrixStartTime = currentDateTime();
 		std::vector<Element> multResult;
 		for (int i = 0; i < N; ++i)
 		{
@@ -1110,27 +1136,27 @@ namespace lbcrypto {
 		}
 
 		newCiphertext->SetElements(std::move(multResult));
-		double repackMatrixTotalTime = currentDateTime() - repackMatrixStartTime;
+		// double repackMatrixTotalTime = currentDateTime() - repackMatrixStartTime;
 
-		double endTimeMult = currentDateTime() - startTimeMult;
+		// double endTimeMult = currentDateTime() - startTimeMult;
 	
-		cout << "TOTAL MULT TIME : " << endTimeMult << endl;
+		// cout << "TOTAL MULT TIME : " << endTimeMult << endl;
 
-		double totalBaseDecomposeTime = 0;
-		for (unsigned int i = 0; i < allBaseDecomposeTimes.size(); ++i)
-		{
-			totalBaseDecomposeTime += allBaseDecomposeTimes.at(i);
-		}
+		// double totalBaseDecomposeTime = 0;
+		// for (unsigned int i = 0; i < allBaseDecomposeTimes.size(); ++i)
+		// {
+		// 	totalBaseDecomposeTime += allBaseDecomposeTimes.at(i);
+		// }
 		
-		cout << "TOTAL BASE DECOMPOSE TIME : " << totalBaseDecomposeTime << endl;
+		// cout << "TOTAL BASE DECOMPOSE TIME : " << totalBaseDecomposeTime << endl;
 
-		cout << "TOTAL BASE DECOMPOSE LOOP TIME : " << baseDecomposeTotalTime << endl;
+		// cout << "TOTAL BASE DECOMPOSE LOOP TIME : " << baseDecomposeTotalTime << endl;
 
-		cout << "Total unpack c2 time : " << unpackC2TotalTime << endl;
+		// cout << "Total unpack c2 time : " << unpackC2TotalTime << endl;
 
-		cout << "Total matrix mult time : " << matrixMulttotalTime << endl;
+		// cout << "Total matrix mult time : " << matrixMulttotalTime << endl;
 
-		cout << "Total matrix repack time : " << repackMatrixTotalTime << endl;
+		// cout << "Total matrix repack time : " << repackMatrixTotalTime << endl;
 
 		// cout << "TOTAL MANUAL BIT BECOMPOSE TIME : " << MANUALbaseDecomposeTotalTime << endl;
 
@@ -1139,7 +1165,7 @@ namespace lbcrypto {
 		// cout << "Total MANUAL matrix mult CREATE time : " << manualMatrixMultCREATETotalTime << endl;
 
 		
-		cout << endl;
+		// cout << endl;
 
 		return newCiphertext;
 
