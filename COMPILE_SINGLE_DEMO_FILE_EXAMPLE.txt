@@ -81,6 +81,24 @@
 
 
 
+# to compile src/pke/bin/demo/test_xnor.cpp for testing shield
+
+	g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/bin/demo/test_xnor.o src/pke/demo/test_xnor.cpp
+
+	g++ -std=gnu++11 -fPIC -o bin/demo/pke/test_xnor src/pke/bin/demo/test_xnor.o bin/lib/libPALISADEpke.so bin/lib/libPALISADEcore.so -Lbin/lib   -pthread -fopenmp   -lgomp
+
+	./bin/demo/pke/test_xnor
+
+
+
+
+
+
+
+
+
+
+
 # to compile src/pke/bin/demo/demo-test-mult.cpp
 
 	g++ -std=gnu++11 -fPIC -g -Wall -Werror -O3 -fopenmp -pthread -I src/core/lib -I src/pke/lib -I src/trapdoor/lib -I src/circuit/lib -I test -I third-party/include -I third-party/include -c -o src/pke/demo/demo-test-mult.o  src/pke/demo/demo-test-mult.cpp

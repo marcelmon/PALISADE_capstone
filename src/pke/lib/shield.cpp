@@ -116,8 +116,9 @@ namespace lbcrypto {
 
 
 		const shared_ptr<LPCryptoParametersSHIELD<Element>> cryptoParamsForError = shared_ptr<LPCryptoParametersSHIELD<Element>>(cryptoParams);
-		cryptoParamsForError->SetDistributionParameter(0);
+		cryptoParamsForError->SetDistributionParameter(2);
 
+		cout << "DIST PATTERN : 2 " << endl;
 		const typename Element::DggType &dggForError = cryptoParamsForError->GetDiscreteGaussianGenerator();
 
 
@@ -345,7 +346,7 @@ namespace lbcrypto {
 
 
 		const shared_ptr<LPCryptoParametersSHIELD<Element>> cryptoParamsForError = shared_ptr<LPCryptoParametersSHIELD<Element>>(cryptoParams);
-		cryptoParamsForError->SetDistributionParameter(0);
+		cryptoParamsForError->SetDistributionParameter(2);
 
 		const typename Element::DggType &dggForError = cryptoParamsForError->GetDiscreteGaussianGenerator();
 
@@ -777,7 +778,7 @@ namespace lbcrypto {
 
 			// decryptMultiplyResultsMatrix(i, 0) -= (finalAverage);
 
-			decryptMultiplyResultsMatrix(i, 0) -= (finalAverage - 1); // <<<<<
+			// decryptMultiplyResultsMatrix(i, 0) -= (finalAverage - 1); // <<<<< <<<< THIS ONEEEEEE
 
 
 			// decryptMultiplyResultsMatrix(i, 0) += (finalAverage + 1);
@@ -802,9 +803,9 @@ namespace lbcrypto {
 			
 			for (int j = 0; j < l; ++j)
 			{
-				if(j >= 5){
-					break;
-				}
+				// if(j >= 5){
+				// 	break;
+				// }
 				
 
 				typename Element::Integer theBit = decryptMultiplyResultsMatrix(i, 0).GetValAtIndex(j).GetBitAtIndex(l);
@@ -816,6 +817,7 @@ namespace lbcrypto {
 				// else{
 				// 	cout << "1 ";
 				// }
+				// cout << theBit << " ";
 
 
 				if(theBit > 0){
@@ -829,7 +831,7 @@ namespace lbcrypto {
 				continue;
 
 			}
-			cout << endl;
+			// cout << endl;
 		}
 
 
