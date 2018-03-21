@@ -283,9 +283,9 @@ namespace lbcrypto {
 
 		
 
-		// Element b = aTimesT;
+		Element b = aTimesT;
 
-		Element b = aTimesT + e;
+		// Element b = aTimesT + e;
 
 
 
@@ -478,9 +478,9 @@ namespace lbcrypto {
 			/*
 				Generate the ciphertext
 			*/
-			Matrix<Element> ciphertextMatrix = (plaintext * BDIMatrix) + (randCoefficientPolyMatrix * publicKeyElementMatrix) + errorMatrix;
+			// Matrix<Element> ciphertextMatrix = (plaintext * BDIMatrix) + (randCoefficientPolyMatrix * publicKeyElementMatrix) + errorMatrix;
 
-			// Matrix<Element> ciphertextMatrix = (plaintext * BDIMatrix) + (randCoefficientPolyMatrix * publicKeyElementMatrix);
+			Matrix<Element> ciphertextMatrix = (plaintext * BDIMatrix) + (randCoefficientPolyMatrix * publicKeyElementMatrix);
 
 
 			/*
@@ -829,7 +829,7 @@ namespace lbcrypto {
 				continue;
 
 			}
-			// cout << endl;
+			cout << endl;
 		}
 
 
@@ -873,10 +873,27 @@ namespace lbcrypto {
 	}
 
 	template <class Element>
-	shared_ptr<Ciphertext<Element>> LPAlgorithmSHESHIELD<Element>::EvalSub(const shared_ptr<Ciphertext<Element>> ciphertext1,
+	shared_ptr<Ciphertext<Element>> LPAlgorithmSHESHIELD<Element>::EvalSub(
+		const shared_ptr<Ciphertext<Element>> ciphertext1,
 		const shared_ptr<Ciphertext<Element>> ciphertext2) const {
 
-		return NULL;
+	    if (!(ciphertext1->GetCryptoParameters() == ciphertext2->GetCryptoParameters())) {
+	        std::string errMsg = "LPAlgorithmSHESHIELD::EvalAdd crypto parameters are not the same";
+	        throw std::runtime_error(errMsg);
+	    }
+
+	    shared_ptr<Ciphertext<Element>> newCiphertext(new Ciphertext<Element>(ciphertext1->GetCryptoContext()));
+	    const std::vector<Element> &cipherText1Elements = ciphertext1->GetElements();
+	    const std::vector<Element> &cipherText2Elements = ciphertext2->GetElements();
+	    std::vector<Element> finalElements;
+
+	    for (unsigned int i = 0; i < cipherText2Elements.size(); i++) {
+	        finalElements.push_back(cipherText1Elements[i] - cipherText2Elements[i]);
+	    }
+
+	    newCiphertext->SetElements(std::move(finalElements));
+
+	    return newCiphertext;
 	}
 
 
