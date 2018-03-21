@@ -54,7 +54,7 @@ vector<uint32_t> convertToBits(uint32_t x) {
     x>>=1;  
   }
 
-  int maxBits = 2;
+  int maxBits = 3;
 
   for (int j = i; j < maxBits; ++j)
   {
@@ -174,12 +174,31 @@ shared_ptr<Ciphertext<PolyType>> bitwiseCompareQuery(shared_ptr<CryptoContext<Po
 		xnorResult = cc->EvalMult(xnorResult, xnorResultBoth);
 	}
 
+	cout << "VAL1 BITS : ";
+	for (unsigned int i = 0; i < val1.size(); ++i)
+	{
+		decryptAndPrint(cc, val1.at(i).at(0), keyPair);
+	}
+	cout << endl << endl;
 
 
+	cout << "VAL2 BITS : ";
+	for (unsigned int i = 0; i < val2.size(); ++i)
+	{
+		decryptAndPrint(cc, val2.at(i).at(0), keyPair);
+	}
+	cout << endl << endl;
+
+
+	cout << "EXTRACT VAL : ";
+	decryptAndPrint(cc, extractValue.at(0), keyPair);
+	cout << endl;
 
 	shared_ptr<Ciphertext<PolyType>> res =  cc->EvalMult(xnorResult, extractValue.at(0));
 	
-	// decryptAndPrint(cc, res, keyPair);
+	cout << "RES : ";
+	decryptAndPrint(cc, res, keyPair);
+	cout << endl;
 	return res;
 }
 
@@ -211,17 +230,17 @@ int main(int argc, char *argv[]) {
 	// vector<uint32_t> extractValu = {1, 2,3, 4,5,6,7,8};
 
 
-	// vector<uint32_t> inputValues = {1, 2,  3, 4,  5,  6, 7};
+	vector<uint32_t> inputValues = {1, 2,  3, 4,  5,  6, 7};
 
-	// vector<uint32_t> extractValu = {7, 25, 3, 7 ,12, 15, 19};
-
-
-	vector<uint32_t> inputValues = {1, 2};
-
-	vector<uint32_t> extractValu = {7, 25};
+	vector<uint32_t> extractValu = {7, 25, 3, 7 ,12, 15, 19};
 
 
-	uint32_t queryVal = inputValues.at(1);
+	// vector<uint32_t> inputValues = {1, 2};
+
+	// vector<uint32_t> extractValu = {7, 25};
+
+
+	uint32_t queryVal = inputValues.at(4);
 
 	// vector<uint32_t> inputValues = {1,2,3,4,5,6};
 
@@ -371,7 +390,7 @@ int main(int argc, char *argv[]) {
 
 		
 		std::vector<uint32_t> bitwiseQueryVal = convertToBits(queryVal);
-		vector<vector<shared_ptr<Ciphertext<PolyType>>>> bitwiseQueryValCText = encryptBitwise(cc, inputValues.at(1), keyPair);
+		vector<vector<shared_ptr<Ciphertext<PolyType>>>> bitwiseQueryValCText = encryptBitwise(cc, queryVal, keyPair);
 
 
 		for (unsigned int i = 0; i < allBitwiseCtext.size(); ++i)
