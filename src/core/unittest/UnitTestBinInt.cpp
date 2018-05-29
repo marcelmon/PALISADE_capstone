@@ -62,6 +62,31 @@ protected:
 /*	TESTING METHODS OF BININT CLASS		*/
 /************************************************/
 
+inline void identity_test(BigInteger& a) {
+	BigInteger ZERO(0);
+	BigInteger ONE(1);
+
+	EXPECT_EQ(a, a + ZERO) << "Failure testing a + 0";
+	EXPECT_EQ(a, a += ZERO) << "Failure testing a += 0";
+	EXPECT_EQ(a, a * ONE) << "Failure testing a * 1";
+	EXPECT_EQ(a, a *= ONE) << "Failure testing a *= 1";
+
+	EXPECT_EQ(a, ZERO + a) << "Failure testing 0 + a";
+	EXPECT_EQ(a, ZERO += a) << "Failure testing 0 += a";
+	EXPECT_EQ(a, ONE * a) << "Failure testing 1 * a";
+	EXPECT_EQ(a, ONE *= a) << "Failure testing 1 *= a";
+
+	EXPECT_EQ(a*a, ONE *= a) << "Failure on 1 *= a, twice";
+}
+
+TEST(UTBinInt,identity) {
+	BigInteger sm("3279");
+	BigInteger lg("1234567898765432");
+
+	identity_test( sm );
+	identity_test( lg );
+}
+
 /************************************************/
 /* TESTING BASIC MATH METHODS AND OPERATORS     */
 /************************************************/
@@ -318,6 +343,7 @@ TEST(UTBinInt,basic_math){
     EXPECT_EQ(expectedResult,calculatedResult.ConvertToInt())
       << "Failure testing times_test";
   }
+
   /************************************************/
   /* TESTING METHOD DIVIDED_BY FOR ALL CONDITIONS */
   /************************************************/
@@ -342,6 +368,7 @@ TEST(UTBinInt,basic_math){
     EXPECT_EQ(expectedResult, calculatedResult.ConvertToInt())
       << "Failure testing divided_by_a_less_than_b";
   }
+
   // TEST CASE WHEN FIRST NUMBER IS EQUAL TO THE SECOND NUMBER
   {
 
@@ -354,6 +381,7 @@ TEST(UTBinInt,basic_math){
     EXPECT_EQ(expectedResult, calculatedResult.ConvertToInt())
       << "Failure testing divided_by_a_equals_b";
   }
+
   // TEST CASE WHEN FIRST NUMBER IS GREATER THAN THE SECOND NUMBER
   {
     BigInteger a("2048956567");
@@ -365,7 +393,6 @@ TEST(UTBinInt,basic_math){
     EXPECT_EQ(expectedResult,calculatedResult.ConvertToInt())
       << "Failure testing divided_by_a_greater_than_b";
   }
-
 
   {
 	  BigInteger a("8096");
@@ -447,7 +474,7 @@ TEST(UTBinInt,basic_compare){
   // Result is stored in signed integer, and then the result is
   // typecasted to int as EXPECT_EQ takes integer
 
-  sint c;
+  int c;
   int expectedResult;
 
   // TEST CASE WHEN FIRST NUMBER IS GREATER THAN SECOND NUMBER
@@ -682,9 +709,6 @@ TEST(UTBinInt,mod_arithmetic){
   //      = {(m mod q) + (n mod q)}mod q
   //   ConvertToInt converts BigInteger calculatedResult to integer
 
-
-
-
   // TEST CASE WHEN THE FIRST NUMBER IS GREATER THAN MOD
   {
     BigInteger m("58059595");
@@ -745,19 +769,13 @@ TEST(UTBinInt,mod_arithmetic){
   //    = 0 when m=n
   //    = {(m mod q)+q-(n mod q)}mod q when m<n
 
-  //   ConvertToInt converts BigInteger calculatedResult to
-  //   integer
-
-  //MEMORY ALLOCATION ERROR IN MODSUB METHOD (due to copying value to null pointer)
-
+  //   ConvertToInt converts BigInteger calculatedResult to integer
 
   // TEST CASE WHEN THE FIRST NUMBER IS GREATER THAN MOD
   {
     BigInteger m("595");
     BigInteger n("399");
     BigInteger q("406");
-
-    //std::cout << "Before : " << std::endl;
 
     calculatedResult = m.ModSub(n,q);
     expectedResult = 196;
@@ -797,20 +815,113 @@ TEST(UTBinInt,mod_arithmetic){
 
   // The method "Mod Mul" operates on BigIntegers m,n,q
   //   Returns:  (m*n)mod q
-  //              = {(m mod q)*(n mod q)}
+  //              = {(m mod q)*(n mod q)}mod q
   // ConvertToInt converts BigInteger calculatedResult to integer
 
+  // FIRST > MOD
   {
-    BigInteger m("39960");
-    BigInteger n("7959");
-    BigInteger q("406756");
+    BigInteger m("38");
+    BigInteger n("4");
+    BigInteger q("32");
 
     BigInteger calculatedResult = m.ModMul(n,q);
-    uint64_t expectedResult = 365204;
+    uint64_t expectedResult = 24;
 
     EXPECT_EQ(expectedResult, calculatedResult.ConvertToInt())
-      << "Failure testing mod_mul_test";
+      << "Failure testing ModMul first > mod";
   }
+
+  // FIRST == MOD
+  {
+    BigInteger m("32");
+    BigInteger n("4");
+    BigInteger q("32");
+
+    BigInteger calculatedResult = m.ModMul(n,q);
+    uint64_t expectedResult = 0;
+
+    EXPECT_EQ(expectedResult, calculatedResult.ConvertToInt())
+      << "Failure testing ModMul first == mod";
+  }
+
+  // SECOND > MOD
+  {
+    BigInteger m("3");
+    BigInteger n("37");
+    BigInteger q("32");
+
+    BigInteger calculatedResult = m.ModMul(n,q);
+    uint64_t expectedResult = 15;
+
+    EXPECT_EQ(expectedResult, calculatedResult.ConvertToInt())
+      << "Failure testing ModMul second > mod";
+  }
+
+  // SECOND == MOD
+  {
+    BigInteger m("3");
+    BigInteger n("32");
+    BigInteger q("32");
+
+    BigInteger calculatedResult = m.ModMul(n,q);
+    uint64_t expectedResult = 0;
+
+    EXPECT_EQ(expectedResult, calculatedResult.ConvertToInt())
+      << "Failure testing ModMul second == mod";
+  }
+
+  // BOTH > MOD
+  {
+    BigInteger m("36");
+    BigInteger n("37");
+    BigInteger q("32");
+
+    BigInteger calculatedResult = m.ModMul(n,q);
+    uint64_t expectedResult = 20;
+
+    EXPECT_EQ(expectedResult, calculatedResult.ConvertToInt())
+      << "Failure testing ModMul both > mod";
+  }
+
+  // BOTH == MOD
+  {
+    BigInteger m("32");
+    BigInteger n("32");
+    BigInteger q("32");
+
+    BigInteger calculatedResult = m.ModMul(n,q);
+    uint64_t expectedResult = 0;
+
+    EXPECT_EQ(expectedResult, calculatedResult.ConvertToInt())
+      << "Failure testing ModMul both == mod";
+  }
+
+  // PRODUCT > MOD
+  {
+    BigInteger m("39");
+    BigInteger n("37");
+    BigInteger q("32");
+
+    BigInteger calculatedResult = m.ModMul(n,q);
+    uint64_t expectedResult = 3;
+
+    EXPECT_EQ(expectedResult, calculatedResult.ConvertToInt())
+      << "Failure testing ModMul product > mod";
+  }
+
+  // PRODUCT == MOD
+  {
+    BigInteger m("8");
+    BigInteger n("4");
+    BigInteger q("32");
+
+    BigInteger calculatedResult = m.ModMul(n,q);
+    uint64_t expectedResult = 0;
+
+    EXPECT_EQ(expectedResult, calculatedResult.ConvertToInt())
+      << "Failure testing ModMul product == mod";
+  }
+
 
   /************************************************/
   /* TESTING METHOD MODEXP FOR ALL CONDITIONS     */
@@ -837,6 +948,7 @@ TEST(UTBinInt,mod_arithmetic){
 TEST(UTBinInt,big_modexp){
   //very big modexp. 
   {
+    bool dbg_flag = false;
     TimeVar t;
 
     TIC(t);
@@ -851,7 +963,21 @@ TEST(UTBinInt,big_modexp){
       << "Failure testing very big mod_exp_test";
 
     
-    PROFILELOG("big_modexp time ns "<<TOC_NS(t));
+    DEBUG("big_modexp time ns "<<TOC_NS(t));
+  }
+}
+
+TEST(UTBinInt,power_2_modexp) {
+  {
+    BigInteger m("2");
+    BigInteger n("50");
+    BigInteger q("16");
+
+    BigInteger calculatedResult = m.ModExp(n,q);
+    BigInteger expectedResult("0");
+
+    EXPECT_EQ( expectedResult, calculatedResult ) << "Failure testing TWO.ModExp(50,16)";
+      
   }
 }
 
@@ -1074,18 +1200,49 @@ TEST(UTBinInt, method_GetBitAtIndex){
 
   x <<=(100); //x has one bit at 100
 
-  x+=BigInteger::TWO; //x has one bit at 2
+  x += BigInteger(2); //x has one bit at 2
 
   DEBUG("x "<<x);
-  if (dbg_flag) x.PrintLimbsInHex();
+  DEBUG(x.GetInternalRepresentation());
+  DEBUG(std::hex <<x.GetInternalRepresentation()<<std::dec); 
 
   // index is 1 for lsb!
-  EXPECT_EQ(x.GetBitAtIndex(1), 0);  
-  EXPECT_EQ(x.GetBitAtIndex(2), 1);  
+  EXPECT_EQ(x.GetBitAtIndex(1), 0);
+  EXPECT_EQ(x.GetBitAtIndex(2), 1);
 
   for (auto idx = 3; idx < 100; idx++){
-    EXPECT_EQ(x.GetBitAtIndex(idx), 0);  
+    EXPECT_EQ(x.GetBitAtIndex(idx), 0);
   }
-  EXPECT_EQ(x.GetBitAtIndex(101), 1);  
+  EXPECT_EQ(x.GetBitAtIndex(101), 1);
 
+}
+
+
+TEST(UTBinInt, method_GetInternalRepresentation){
+  bool dbg_flag = false;
+  BigInteger x(1);
+
+  x <<=(100); //x has one bit at 128
+  x += BigInteger(2); //x has one bit at 2
+
+  auto x_limbs = x.GetInternalRepresentation();
+
+  if (dbg_flag) {
+    DEBUG(std::hex <<x.GetInternalRepresentation()<<std::dec); 
+    DEBUG(x_limbs);
+    DEBUG("x_limbs "<< x_limbs);
+    DEBUG("x "<<x);
+  }
+
+  //define what is correct based on math backend selected
+#if MATHBACKEND == 2
+  vector<uint32_t> correct={2,0,0,16};
+#elif MATHBACKEND == 4 && defined(UBINT_32)
+  vector<uint32_t> correct={2,0,0,16};
+#elif MATHBACKEND == 4 && defined(UBINT_64)
+  //this configuration is not supported yet
+#elif MATHBACKEND == 6
+  vector<NTL::ZZ_limb_t> correct={2,68719476736};
+#endif
+  EXPECT_EQ(correct, x_limbs);
 }

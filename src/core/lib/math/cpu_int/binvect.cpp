@@ -28,6 +28,7 @@
 
 */
 
+#include "../backend.h"
 #include "../../utils/serializable.h"
 #include "../cpu_int/binvect.h"
 #include "../nbtheory.h"
@@ -40,15 +41,8 @@ namespace cpu_int {
 template<class IntegerType>
 BigVectorImpl<IntegerType>::BigVectorImpl(){
 	this->m_length = 0;
-	//this->m_modulus;
+	this->m_modulus = 0;
 	m_data = NULL;
-}
-
-template<class IntegerType>
-BigVectorImpl<IntegerType>::BigVectorImpl(usint length){
-	this->m_length = length;
-	//this->m_modulus;
-	this->m_data = new IntegerType[m_length] ();
 }
 
 template<class IntegerType>
@@ -66,12 +60,11 @@ BigVectorImpl<IntegerType>::BigVectorImpl(usint length, const IntegerType& modul
 	usint len = rhs.size();
 	for (usint i=0;i<m_length;i++){ // this loops over each entry
 		if(i<len) {
-			m_data[i] =  IntegerType(*(rhs.begin()+i));  
+			m_data[i] =  IntegerType(*(rhs.begin()+i))%m_modulus;  
 		} else {
-			m_data[i] = IntegerType::ZERO;
+			m_data[i] = 0;
 		}
 	}
-
 }
 
 template<class IntegerType>
@@ -82,9 +75,9 @@ BigVectorImpl<IntegerType>::BigVectorImpl(usint length, const IntegerType& modul
 	usint len = rhs.size();
 	for(usint i=0;i<m_length;i++){ // this loops over each entry
 		if(i<len) {
-			m_data[i] =  IntegerType(*(rhs.begin()+i));  
+			m_data[i] =  IntegerType(*(rhs.begin()+i))%m_modulus;  
 		} else {
-			m_data[i] = IntegerType::ZERO;
+			m_data[i] = 0;
 		}
 	}
 }
@@ -98,7 +91,6 @@ BigVectorImpl<IntegerType>::BigVectorImpl(const BigVectorImpl &bigVector){
 	for(usint i=0;i<m_length;i++){
 		m_data[i] = bigVector.m_data[i];
 	}
-
 }
 
 template<class IntegerType>
@@ -107,6 +99,8 @@ BigVectorImpl<IntegerType>::BigVectorImpl(BigVectorImpl &&bigVector){
 	m_length = bigVector.m_length;
 	m_modulus = bigVector.m_modulus;
 	bigVector.m_data = NULL;
+	bigVector.m_length = 0;
+	bigVector.m_modulus = 0;
 }
 
 //ASSIGNMENT OPERATOR
@@ -114,7 +108,7 @@ template<class IntegerType>
 const BigVectorImpl<IntegerType>& BigVectorImpl<IntegerType>::operator=(const BigVectorImpl &rhs){
 	if(this!=&rhs){
 		if(this->m_length==rhs.m_length){
-			for (usint i = 0; i < m_length; i++){
+			for (size_t i = 0; i < m_length; i++){
 				this->m_data[i] = rhs.m_data[i];
 			}
 		}
@@ -124,7 +118,7 @@ const BigVectorImpl<IntegerType>& BigVectorImpl<IntegerType>::operator=(const Bi
 			m_length = rhs.m_length;
 			m_modulus = rhs.m_modulus;
 			m_data = new IntegerType[m_length];
-			for (usint i = 0; i < m_length; i++){
+			for (size_t i = 0; i < m_length; i++){
 				m_data[i] = rhs.m_data[i];
 			}
 		}
@@ -135,11 +129,28 @@ const BigVectorImpl<IntegerType>& BigVectorImpl<IntegerType>::operator=(const Bi
 }
 
 template<class IntegerType>
-const BigVectorImpl<IntegerType>& BigVectorImpl<IntegerType>::operator=(std::initializer_list<sint> rhs){
-	usint len = rhs.size();
-	for(usint i=0;i<m_length;i++){ // this loops over each tower
+const BigVectorImpl<IntegerType>& BigVectorImpl<IntegerType>::operator=(BigVectorImpl &&rhs){
+
+	if(this!=&rhs){
+		delete [] m_data;
+		m_data = rhs.m_data;
+		m_length = rhs.m_length;
+		m_modulus = rhs.m_modulus;
+		rhs.m_data = NULL;
+	}
+
+	return *this;
+}
+
+template<class IntegerType>
+const BigVectorImpl<IntegerType>& BigVectorImpl<IntegerType>::operator=(std::initializer_list<uint64_t> rhs){
+	size_t len = rhs.size();
+	for(size_t i=0;i<m_length;i++){
 		if(i<len) {
-			m_data[i] = IntegerType(*(rhs.begin()+i));
+		  if (m_modulus!=0)
+			m_data[i] = IntegerType(*(rhs.begin()+i))%m_modulus;
+		  else
+			m_data[i] = IntegerType(*(rhs.begin()+i));	    
 		} else {
 			m_data[i] = 0;
 		}
@@ -149,11 +160,14 @@ const BigVectorImpl<IntegerType>& BigVectorImpl<IntegerType>::operator=(std::ini
 }
 
 template<class IntegerType>
-const BigVectorImpl<IntegerType>& BigVectorImpl<IntegerType>::operator=(std::initializer_list<std::string> rhs){
+const BigVectorImpl<IntegerType>& BigVectorImpl<IntegerType>::operator=(std::initializer_list<std::string> rhs) {
         bool dbg_flag = false;
-	usint len = rhs.size();
-	for(usint i=0;i<m_length;i++){ // this loops over each tower
+        size_t len = rhs.size();
+	for(size_t i=0;i<m_length;i++){
 		if(i<len) {
+		  if (m_modulus!=0)
+			m_data[i] = IntegerType(*(rhs.begin()+i))%m_modulus;
+		  else
 			m_data[i] = IntegerType(*(rhs.begin()+i));
 		} else {
 			m_data[i] = 0;
@@ -165,43 +179,16 @@ const BigVectorImpl<IntegerType>& BigVectorImpl<IntegerType>::operator=(std::ini
 }
 
 template<class IntegerType>
-BigVectorImpl<IntegerType>& BigVectorImpl<IntegerType>::operator=(BigVectorImpl &&rhs){
-
-	if(this!=&rhs){
-
-		delete [] m_data;
-		m_data = rhs.m_data;
-		m_length = rhs.m_length;
-		m_modulus = rhs.m_modulus;
-		rhs.m_data = NULL;
-	}
-
-	return *this;
-
-}
-
-template<class IntegerType>
 BigVectorImpl<IntegerType>::~BigVectorImpl(){
-	//std::cout<<"destructor called for vector of size: "<<this->m_length<<"  "<<std::endl;
 	delete [] m_data;
 }
 
 //ACCESSORS
-template<class IntegerType_c>
-std::ostream& operator<<(std::ostream& os, const BigVectorImpl<IntegerType_c> &ptr_obj){
-        auto len = ptr_obj.m_length;
-        os<<"[";
-	for(usint i=0;i<len;i++){
-	  os<< ptr_obj.m_data[i];
-	  os << ((i == (len-1))?"]":" ");
-	}
-	return os;
-}
-
 template<class IntegerType>
 void BigVectorImpl<IntegerType>::SetModulus(const IntegerType& value){
 	this->m_modulus = value;
 }
+
 /**Switches the integers in the vector to values corresponding to the new modulus
 *  Algorithm: Integer i, Old Modulus om, New Modulus nm, delta = abs(om-nm):
 *  Case 1: om < nm
@@ -210,7 +197,7 @@ void BigVectorImpl<IntegerType>::SetModulus(const IntegerType& value){
 *  Case 2: om > nm
 *  i > om/2
 *  i' = i-delta
-*/	
+*/
 template<class IntegerType>
 void BigVectorImpl<IntegerType>::SwitchModulus(const IntegerType& newModulus) {
     bool dbg_flag = false;
@@ -223,23 +210,23 @@ void BigVectorImpl<IntegerType>::SwitchModulus(const IntegerType& newModulus) {
 	IntegerType diff ((oldModulus > newModulus) ? (oldModulus-newModulus) : (newModulus - oldModulus));
 	DEBUG("Switch modulus diff :"<<diff);
 	for(usint i=0; i< this->m_length; i++) {
-		n = this->GetValAtIndex(i);
+		n = this->at(i);
 		DEBUG("i,n "<<i<<" "<< n);
 		if(oldModulus < newModulus) {
 			if(n > oldModulusByTwo) {
 			  DEBUG("s1 "<<n.ModAdd(diff, newModulus));
-				this->SetValAtIndex(i, n.ModAdd(diff, newModulus));
+			  this->at(i)= n.ModAdd(diff, newModulus);
 			} else {
 			  DEBUG("s2 "<<n.Mod(newModulus));
-				this->SetValAtIndex(i, n.Mod(newModulus));
+			  this->at(i)= n.Mod(newModulus);
 			}
 		} else {
 			if(n > oldModulusByTwo) {
 			  DEBUG("s3 "<<n.ModSub(diff, newModulus));				
-				this->SetValAtIndex(i, n.ModSub(diff, newModulus));
+			  this->at(i)= n.ModSub(diff, newModulus);
 			} else {
 			  DEBUG("s4 "<<n.Mod(newModulus));
-				this->SetValAtIndex(i, n.Mod(newModulus));
+			  this->at(i)= n.Mod(newModulus);
 			}
 		}
 	}
@@ -251,27 +238,7 @@ void BigVectorImpl<IntegerType>::SwitchModulus(const IntegerType& newModulus) {
 }
 
 template<class IntegerType>
-const IntegerType& BigVectorImpl<IntegerType>::GetModulus() const{
-
-	return this->m_modulus;
-
-}
-
-
-template<class IntegerType>
-usint BigVectorImpl<IntegerType>::GetLength() const{
-	return this->m_length;
-}
-
-template<class IntegerType>
 BigVectorImpl<IntegerType> BigVectorImpl<IntegerType>::Mod(const IntegerType& modulus) const{
-
-	//BigVectorImpl ans(*this);
-
-	//for(usint i=0;i<this->m_length;i++){
-	//	ans.m_data[i] = ans.m_data[i].Mod(modulus);
-	//}
-	//return ans;
 
 	if (modulus==2)
 		return this->ModByTwo();
@@ -279,17 +246,37 @@ BigVectorImpl<IntegerType> BigVectorImpl<IntegerType>::Mod(const IntegerType& mo
 	{
 		BigVectorImpl ans(this->GetLength(),this->GetModulus());
 		IntegerType halfQ(this->GetModulus() >> 1);
-		for (usint i = 0; i<ans.GetLength(); i++) {
-			if (this->GetValAtIndex(i)>halfQ) {
-				ans.SetValAtIndex(i,this->GetValAtIndex(i).ModSub(this->GetModulus(),modulus));
+		for (size_t i = 0; i<ans.GetLength(); i++) {
+			if (this->operator[](i)>halfQ) {
+			  ans[i] = this->operator[](i).ModSub(this->GetModulus(),modulus);
 			}
 			else {
-				ans.SetValAtIndex(i,this->GetValAtIndex(i).Mod(modulus));
+			  ans[i] = this->operator[](i).Mod(modulus);
 			}
 		}
 		return ans;
 	}
+}
 
+template<class IntegerType>
+const BigVectorImpl<IntegerType>& BigVectorImpl<IntegerType>::ModEq(const IntegerType& modulus) {
+
+	if (modulus==2) {
+		return this->ModByTwoEq();
+	}
+	else
+	{
+		IntegerType halfQ(this->GetModulus() >> 1);
+		for (usint i = 0; i<this->GetLength(); i++) {
+			if (this->operator[](i)>halfQ) {
+			  this->operator[](i).ModSubEq(this->GetModulus(),modulus);
+			}
+			else {
+			  this->operator[](i).ModEq(modulus);
+			}
+		}
+		return *this;
+	}
 }
 
 template<class IntegerType>
@@ -313,6 +300,15 @@ BigVectorImpl<IntegerType> BigVectorImpl<IntegerType>::ModAdd(const IntegerType 
 }
 
 template<class IntegerType>
+const BigVectorImpl<IntegerType>& BigVectorImpl<IntegerType>::ModAddEq(const IntegerType &b) {
+
+	for(usint i=0;i<this->m_length;i++){
+		this->m_data[i].ModAddEq(b, this->m_modulus);
+	}
+	return *this;
+}
+
+template<class IntegerType>
 BigVectorImpl<IntegerType> BigVectorImpl<IntegerType>::ModSub(const IntegerType &b) const{
 	BigVectorImpl ans(*this);
 
@@ -323,16 +319,25 @@ BigVectorImpl<IntegerType> BigVectorImpl<IntegerType>::ModSub(const IntegerType 
 }
 
 template<class IntegerType>
+const BigVectorImpl<IntegerType>& BigVectorImpl<IntegerType>::ModSubEq(const IntegerType &b) {
+
+	for(usint i=0;i<this->m_length;i++){
+		this->m_data[i].ModSubEq(b,this->m_modulus);
+	}
+	return *this;
+}
+
+template<class IntegerType>
 BigVectorImpl<IntegerType> BigVectorImpl<IntegerType>::MultiplyAndRound(const IntegerType &p, const IntegerType &q) const {
 
 	//BigVectorImpl ans(this->GetLength(), this->GetModulus());
 	//IntegerType halfQ(this->GetModulus() >> 1);
 	//for (usint i = 0; i<ans.GetLength(); i++) {
-	//	if (this->GetValAtIndex(i)>halfQ) {
-	//		ans.SetValAtIndex(i, this->GetValAtIndex(i).ModSub(this->GetModulus(), modulus));
+	//	if (this->at(i)>halfQ) {
+	//		ans.at(i)= this->at(i).ModSub(this->GetModulus(), modulus);
 	//	}
 	//	else {
-	//		ans.SetValAtIndex(i, this->GetValAtIndex(i).Mod(modulus));
+	//		ans.at(i)= this->at(i).Mod(modulus);
 	//	}
 	//}
 	//return ans;
@@ -374,19 +379,13 @@ Generally speaking, the value of \alpha should be \ge \gamma + 1, where \gamma +
 We use the upper bound of dividend assuming that none of the dividends will be larger than 2^(2*n + 3).
 
 Potential improvements:
-1. When working with MATHBACKEND = 1, we tried to compute an evenly distributed array of \mu (the number is approximately equal
-to the number BARRET_LEVELS) but that did not give any performance improvement. So using one pre-computed value of 
-\mu was the most efficient option at the time.
-2. We also tried "Interleaved digit-serial modular multiplication with generalized Barrett reduction" Algorithm 3 in the Source but it 
-was slower with MATHBACKEND = 1.
-3. Our implementation makes the modulo operation essentially equivalent to two multiplications. If sparse moduli are selected, it can be replaced
+Our implementation makes the modulo operation essentially equivalent to two multiplications. If sparse moduli are selected, it can be replaced
 with a single multiplication. The interleaved version of modular multiplication for this case is listed in Algorithm 6 of the source. 
 This algorithm would most like give the biggest improvement but it sets constraints on moduli.
 
 */
 template<class IntegerType>
 BigVectorImpl<IntegerType> BigVectorImpl<IntegerType>::ModMul(const IntegerType &b) const{
-	//std::cout<< "Printing Modulus: "<< m_modulus<< std::endl;
 
 	BigVectorImpl ans(*this);
 
@@ -394,15 +393,24 @@ BigVectorImpl<IntegerType> BigVectorImpl<IntegerType>::ModMul(const IntegerType 
 	IntegerType mu = lbcrypto::ComputeMu<IntegerType>(m_modulus);
 
 	for(usint i=0;i<this->m_length;i++){
-		//std::cout<< "before data: "<< ans.m_data[i]<< std::endl;
 		ans.m_data[i].ModBarrettMulInPlace(b,this->m_modulus,mu);
-		//std::cout<< "after data: "<< ans.m_data[i]<< std::endl;
 	}
 
 	return ans;
 }
 
+template<class IntegerType>
+const BigVectorImpl<IntegerType>& BigVectorImpl<IntegerType>::ModMulEq(const IntegerType &b) {
 
+	//Precompute the Barrett mu parameter
+	IntegerType mu = lbcrypto::ComputeMu<IntegerType>(m_modulus);
+
+	for(usint i=0;i<this->m_length;i++){
+		this->m_data[i].ModBarrettMulInPlace(b,this->m_modulus,mu);
+	}
+
+	return *this;
+}
 
 template<class IntegerType>
 BigVectorImpl<IntegerType> BigVectorImpl<IntegerType>::ModExp(const IntegerType &b) const{
@@ -417,10 +425,7 @@ template<class IntegerType>
 BigVectorImpl<IntegerType> BigVectorImpl<IntegerType>::ModInverse() const{
 
 	BigVectorImpl ans(*this);
-	//std::cout << ans << std::endl;
 	for(usint i=0;i<this->m_length;i++){
-		//std::cout << ans.m_data[i] << std::endl;
-		//ans.m_data[i].PrintValueInDec();
 		ans.m_data[i] = ans.m_data[i].ModInverse(this->m_modulus);
 	}
 	return ans;
@@ -444,6 +449,20 @@ BigVectorImpl<IntegerType> BigVectorImpl<IntegerType>::ModAdd(const BigVectorImp
 }
 
 template<class IntegerType>
+const BigVectorImpl<IntegerType>& BigVectorImpl<IntegerType>::ModAddEq(const BigVectorImpl &b) {
+
+	if((this->m_length!=b.m_length) || this->m_modulus!=b.m_modulus ){
+        throw std::logic_error("ModAddEq called on BigVectorImpl's with different parameters.");
+	}
+
+	for(usint i=0;i<this->m_length;i++){
+		this->m_data[i].ModAddEq(b.m_data[i],this->m_modulus);
+	}
+	return *this;
+
+}
+
+template<class IntegerType>
 BigVectorImpl<IntegerType> BigVectorImpl<IntegerType>::ModSub(const BigVectorImpl &b) const{
 
 	if((this->m_length!=b.m_length) || this->m_modulus!=b.m_modulus ){
@@ -460,54 +479,46 @@ BigVectorImpl<IntegerType> BigVectorImpl<IntegerType>::ModSub(const BigVectorImp
 }
 
 template<class IntegerType>
-BigVectorImpl<IntegerType> BigVectorImpl<IntegerType>::ModByTwo() const {
+const BigVectorImpl<IntegerType>& BigVectorImpl<IntegerType>::ModSubEq(const BigVectorImpl &b) {
 
-	BigVectorImpl ans(this->GetLength(),this->GetModulus());
-	IntegerType halfQ(this->GetModulus() >> 1);
-	for (usint i = 0; i<ans.GetLength(); i++) {
-		if (this->GetValAtIndex(i)>halfQ) {
-			if (this->GetValAtIndex(i).Mod(2) == 1)
-				ans.SetValAtIndex(i, IntegerType(0));
-			else
-				ans.SetValAtIndex(i, 1);
-		}
-		else {
-			if (this->GetValAtIndex(i).Mod(2) == 1)
-				ans.SetValAtIndex(i, 1);
-			else
-				ans.SetValAtIndex(i, IntegerType(0));
-		}
-
+	if((this->m_length!=b.m_length) || this->m_modulus!=b.m_modulus ){
+        throw std::logic_error("ModSub called on BigVectorImpl's with different parameters.");
 	}
+
+	for(usint i=0;i<this->m_length;i++){
+		this->m_data[i].ModSubEq(b.m_data[i],this->m_modulus);
+	}
+	return *this;
+
+}
+
+template<class IntegerType>
+BigVectorImpl<IntegerType> BigVectorImpl<IntegerType>::ModByTwo() const {
+	BigVectorImpl ans(*this);
+	ans.ModByTwoEq();
 	return ans;
 }
 
 template<class IntegerType>
-const BigVectorImpl<IntegerType>& BigVectorImpl<IntegerType>::operator+=(const BigVectorImpl &b) {
+const BigVectorImpl<IntegerType>& BigVectorImpl<IntegerType>::ModByTwoEq() {
 
-	if((this->m_length!=b.m_length) || this->m_modulus!=b.m_modulus ){
-        throw std::logic_error("operator+= called on BigVectorImpl's with different parameters.");
-	}
+	IntegerType halfQ(this->GetModulus() >> 1);
+	for (usint i = 0; i<this->GetLength(); i++) {
+		if (this->operator[](i)>halfQ) {
+			if (this->operator[](i).Mod(2) == 1)
+				this->operator[](i) = IntegerType(0);
+			else
+				this->operator[](i) = 1;
+		}
+		else {
+			if (this->operator[](i).Mod(2) == 1)
+				this->operator[](i) = 1;
+			else
+				this->operator[](i )= IntegerType(0);
+		}
 
-	for(usint i=0;i<this->m_length;i++){
-		this->m_data[i] = this->m_data[i].ModAdd(b.m_data[i],this->m_modulus);
-	}
-	return *this;
-
-}
-
-template<class IntegerType>
-const BigVectorImpl<IntegerType>& BigVectorImpl<IntegerType>::operator-=(const BigVectorImpl &b) {
-
-	if((this->m_length!=b.m_length) || this->m_modulus!=b.m_modulus ){
-        throw std::logic_error("operator-= called on BigVectorImpl's with different parameters.");
-	}
-
-	for(usint i=0;i<this->m_length;i++){
-		this->m_data[i] = this->m_data[i].ModSub(b.m_data[i],this->m_modulus);
 	}
 	return *this;
-
 }
 
 /*
@@ -525,12 +536,7 @@ Generally speaking, the value of \alpha should be \ge \gamma + 1, where \gamma +
 We use the upper bound of dividend assuming that none of the dividends will be larger than 2^(2*n + 3).
 
 Potential improvements:
-1. When working with MATHBACKEND = 1, we tried to compute an evenly distributed array of \mu (the number is approximately equal
-to the number BARRET_LEVELS) but that did not give any performance improvement. So using one pre-computed value of 
-\mu was the most efficient option at the time.
-2. We also tried "Interleaved digit-serial modular multiplication with generalized Barrett reduction" Algorithm 3 in the Source but it 
-was slower with MATHBACKEND = 1.
-3. Our implementation makes the modulo operation essentially equivalent to two multiplications. If sparse moduli are selected, it can be replaced
+Our implementation makes the modulo operation essentially equivalent to two multiplications. If sparse moduli are selected, it can be replaced
 with a single multiplication. The interleaved version of modular multiplication for this case is listed in Algorithm 6 of the source. 
 This algorithm would most like give the biggest improvement but it sets constraints on moduli.
 
@@ -548,10 +554,25 @@ BigVectorImpl<IntegerType> BigVectorImpl<IntegerType>::ModMul(const BigVectorImp
 	IntegerType mu = lbcrypto::ComputeMu<IntegerType>(this->GetModulus());
 
 	for(usint i=0;i<ans.m_length;i++){
-		//ans.m_data[i] = ans.m_data[i].ModMul(b.m_data[i],this->m_modulus);
 		ans.m_data[i].ModBarrettMulInPlace(b.m_data[i],this->m_modulus,mu);
 	}
 	return ans;
+}
+
+template<class IntegerType>
+const BigVectorImpl<IntegerType>& BigVectorImpl<IntegerType>::ModMulEq(const BigVectorImpl &b) {
+
+	if((this->m_length!=b.m_length) || this->m_modulus!=b.m_modulus ){
+        throw std::logic_error("ModMul called on BigVectorImpl's with different parameters.");
+	}
+
+	//Precompute the Barrett mu parameter
+	IntegerType mu = lbcrypto::ComputeMu<IntegerType>(this->GetModulus());
+
+	for(usint i=0;i<this->m_length;i++){
+		this->m_data[i].ModBarrettMulInPlace(b.m_data[i],this->m_modulus,mu);
+	}
+	return *this;
 }
 
 template<class IntegerType>
@@ -572,9 +593,12 @@ BigVectorImpl<IntegerType> BigVectorImpl<IntegerType>::MultWithOutMod(const BigV
 //Gets the ind
 template<class IntegerType>
 BigVectorImpl<IntegerType> BigVectorImpl<IntegerType>::GetDigitAtIndexForBase(usint index, usint base) const{
+	bool dbg_flag = false;
+	DEBUG("BigVectorImpl::GetDigitAtIndexForBase:  index = " << index << ", base = " << base);
 	BigVectorImpl ans(*this);
 	for(usint i=0;i<this->m_length;i++){
 		ans.m_data[i] = IntegerType(ans.m_data[i].GetDigitAtIndexForBase(index,base));
+		DEBUG("ans.m_data[" << i << "] = " << ans.m_data[i]);
 	}
 
 	return ans;
@@ -598,7 +622,7 @@ bool BigVectorImpl<IntegerType>::Serialize(lbcrypto::Serialized* serObj) const {
 	if( pkVectorLength > 0 ) {
 		std::string pkBufferString = "";
 		for (size_t i = 0; i < pkVectorLength; i++) {
-			pkBufferString += GetValAtIndex(i).Serialize(this->GetModulus());
+			pkBufferString += (*this)[i].SerializeToString(this->GetModulus());
 		}
 		bbvMap.AddMember("VectorValues", pkBufferString, serObj->GetAllocator());
 	}
@@ -642,7 +666,7 @@ bool BigVectorImpl<IntegerType>::Deserialize(const lbcrypto::Serialized& serObj)
 		if( *vp == '\0' ) {
 			return false; // premature end of vector
 		}
-		vp = vectorElem.Deserialize(vp, bbiModulus);
+		vp = vectorElem.DeserializeFromString(vp, bbiModulus);
 		newVec[ePos] = vectorElem;
 	}
 
@@ -650,5 +674,8 @@ bool BigVectorImpl<IntegerType>::Deserialize(const lbcrypto::Serialized& serObj)
 
 	return true;
 }
+
+template class BigVectorImpl<BigInteger<integral_dtype,BigIntegerBitLength>>;
+
 
 } // namespace lbcrypto ends
