@@ -1231,6 +1231,52 @@ CryptoContextFactory<T>::genCryptoContextBGV(shared_ptr<typename T::Params> ep,
 
 template <typename T>
 CryptoContext<T>
+CryptoContextFactory<T>::genCryptoContextSHIELD(shared_ptr<typename T::Params> ep,
+		const PlaintextModulus plaintextmodulus,
+		usint relinWindow, float stDev,
+		MODE mode, int depth)
+{
+	shared_ptr<LPCryptoParametersSHIELD<T>> params( new LPCryptoParametersSHIELD<T>(
+		ep,
+		plaintextmodulus,
+		stDev,
+		9, // assuranceMeasure,
+		1.006, // securityLevel,
+		relinWindow, // Relinearization Window
+		mode, //Mode of noise generation
+		depth) );
+
+	shared_ptr<LPPublicKeyEncryptionScheme<T>> scheme( new LPPublicKeyEncryptionSchemeSHIELD<T>() );
+
+	return CryptoContextFactory<T>::GetContext(params,scheme);
+}
+
+template <typename T>
+CryptoContext<T>
+CryptoContextFactory<T>::genCryptoContextSHIELD(shared_ptr<typename T::Params> ep,
+	EncodingParams encodingParams,
+	usint relinWindow, float stDev,
+	MODE mode, int depth)
+{
+	shared_ptr<LPCryptoParametersSHIELD<T>> params(new LPCryptoParametersSHIELD<T>(
+		ep,
+		encodingParams,
+		stDev,
+		9, // assuranceMeasure,
+		1.006, // securityLevel,
+		relinWindow, // Relinearization Window
+		mode, //Mode of noise generation
+		depth
+));
+
+	shared_ptr<LPPublicKeyEncryptionScheme<T>> scheme(new LPPublicKeyEncryptionSchemeSHIELD<T>());
+
+	return CryptoContextFactory<T>::GetContext(params,scheme);
+}
+
+
+template <typename T>
+CryptoContext<T>
 CryptoContextFactory<T>::genCryptoContextStehleSteinfeld(shared_ptr<typename T::Params> ep,
 		const PlaintextModulus plaintextmodulus,
 		usint relinWindow, float stDev, float stDevStSt, int depth, int assuranceMeasure, float securityLevel)

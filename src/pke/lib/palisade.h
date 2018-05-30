@@ -79,6 +79,7 @@ using Ciphertext = shared_ptr<CiphertextImpl<Element>>;
 #include "bfv.h"
 #include "bfvrns.h"
 #include "nullscheme.h"
+#include "shield.h"
 
 #include "utils/serializable.h"
 

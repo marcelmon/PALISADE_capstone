@@ -2293,6 +2293,39 @@ public:
 		usint relinWindow, float stDev,
 		MODE mode = RLWE, int depth = 1);
 
+
+	/**
+	* construct a PALISADE CryptoContextImpl for the BGV Scheme
+	* @param plaintextmodulus
+	* @param ringdim
+	* @param modulus
+	* @param rootOfUnity
+	* @param relinWindow
+	* @param stDev
+	* @param mode
+	* @return new context
+	*/
+	static CryptoContext<Element> genCryptoContextSHIELD(shared_ptr<typename Element::Params> params,
+		const PlaintextModulus plaintextmodulus,
+		usint relinWindow, float stDev,
+		MODE mode = RLWE, int depth = 1);
+
+	/**
+	* construct a PALISADE CryptoContextImpl for the BGV Scheme
+	* @param encodingParams
+	* @param ringdim
+	* @param modulus
+	* @param rootOfUnity
+	* @param relinWindow
+	* @param stDev
+	* @param mode
+	* @return new context
+	*/
+	static CryptoContext<Element> genCryptoContextSHIELD(shared_ptr<typename Element::Params> params,
+		EncodingParams encodingParams,
+		usint relinWindow, float stDev,
+		MODE mode = RLWE, int depth = 1);
+
 	/**
 	* construct a PALISADE CryptoContextImpl for the StehleSteinfeld Scheme
 	* @param plaintextmodulus

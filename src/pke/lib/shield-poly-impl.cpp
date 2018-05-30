@@ -31,4 +31,8 @@ namespace lbcrypto {
 template class LPCryptoParametersSHIELD<Poly>;
 template class LPPublicKeyEncryptionSchemeSHIELD<Poly>;
 template class LPAlgorithmSHIELD<Poly>;
+
+template class LPCryptoParametersSHIELD<NativePoly>;
+template class LPPublicKeyEncryptionSchemeSHIELD<NativePoly>;
+template class LPAlgorithmSHIELD<NativePoly>;
 }
