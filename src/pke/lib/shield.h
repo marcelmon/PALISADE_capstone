@@ -233,7 +233,11 @@ namespace lbcrypto {
 		 * @param doEncryption encrypts if true, embeds (encodes) the plaintext into cryptocontext if false
 		 * @return A shared pointer to the encrypted Ciphertext.
 		 */
-		Ciphertext<Element> Encrypt(const LPPrivateKey<Element> privateKey, Element plaintext) const;
+		Ciphertext<Element> Encrypt(const LPPrivateKey<Element> privateKey, Element plaintext) const
+		{
+			std::string errMsg = "LPAlgorithmSHIELD::Encrypt with plaintext is not implemented for the SHIELD Scheme.";
+			throw std::runtime_error(errMsg);
+		}
 
 		/**
 		* Method for decrypting plaintext using SHIELD
@@ -303,7 +307,11 @@ namespace lbcrypto {
 		* @return A shared pointer to the ciphertext which is the EvalAdd of the two inputs.
 		*/
 		Ciphertext<Element> EvalAdd(const Ciphertext<Element> ciphertext,
-			const Plaintext plaintext) const;
+			const Plaintext plaintext) const
+		{
+			std::string errMsg = "LPAlgorithmSHESHIELD::EvalAdd with plaintext is not implemented for the SHIELD Scheme.";
+			throw std::runtime_error(errMsg);
+		}
 
 
 
@@ -327,7 +335,11 @@ namespace lbcrypto {
 		* @return A shared pointer to the ciphertext which is the EvalAdd of the two inputs.
 		*/
 		Ciphertext<Element> EvalSub(const Ciphertext<Element> ciphertext,
-			const Plaintext plaintext) const;
+			const Plaintext plaintext) const
+		{
+			std::string errMsg = "LPAlgorithmSHESHIELD::EvalSub with plaintext is not implemented for the SHIELD Scheme.";
+			throw std::runtime_error(errMsg);
+		}
 
 		/**
 		* Function for homomorphic multiplication of ciphertexts without key switching. 
@@ -348,7 +360,12 @@ namespace lbcrypto {
 		* @return result of the multiplication.
 		*/
 		Ciphertext<Element> EvalMult(const Ciphertext<Element> ciphertext,
-			const Plaintext plaintext) const;
+			const Plaintext plaintext) const 
+		{
+			std::string errMsg = "LPAlgorithmSHESHIELD::EvalMult with plaintext is not implemented for the SHIELD Scheme.";
+			throw std::runtime_error(errMsg);
+		
+		}
 
 		/**
 		* Function for homomorphic multiplication of ciphertexts followed by key switching operation.
@@ -375,7 +392,7 @@ namespace lbcrypto {
 		Ciphertext<Element> EvalMultAndRelinearize(const Ciphertext<Element> ciphertext1,
 			const Ciphertext<Element> ciphertext2,
 			const vector<LPEvalKey<Element>> &ek) const {
-			std::string errMsg = "LPAlgorithmLTV::EvalMultAndRelinearize is not implemented for the LTV Scheme.";
+			std::string errMsg = "LPAlgorithmSHESHIELD::EvalMultAndRelinearize is not implemented for the SHIELD Scheme.";
 			throw std::runtime_error(errMsg);
 		}
 
@@ -388,7 +405,7 @@ namespace lbcrypto {
 		*/
 		Ciphertext<Element> EvalMultMany(const vector<Ciphertext<Element>>& cipherTextList,
 				const vector<LPEvalKey<Element>> &evalKeys) const {
-			std::string errMsg = "LPAlgorithmLTV::EvalMultMany is not implemented for the LTV Scheme.";
+			std::string errMsg = "LPAlgorithmSHESHIELD::EvalMultMany is not implemented for the SHIELD Scheme.";
 			throw std::runtime_error(errMsg);
 		}
 
@@ -400,7 +417,11 @@ namespace lbcrypto {
 		* @param ct first input ciphertext.
 		* @return new ciphertext.
 		*/
-		Ciphertext<Element> EvalNegate(const Ciphertext<Element> ct) const;
+		Ciphertext<Element> EvalNegate(const Ciphertext<Element> ct) const
+		{
+			std::string errMsg = "LPAlgorithmSHESHIELD::EvalNegate is not implemented for the SHIELD Scheme.";
+			throw std::runtime_error(errMsg);
+		}
 
 		/**
 		* Method for generating a KeySwitchHint using RLWE relinearization (based on the RLWE assumption only)
@@ -410,7 +431,11 @@ namespace lbcrypto {
 		* @return resulting keySwitchHint to switch the ciphertext to be decryptable by new private key.
 		*/
 		LPEvalKey<Element> KeySwitchGen(const LPPrivateKey<Element> originalPrivateKey, 
-			const LPPrivateKey<Element> newPrivateKey) const;
+			const LPPrivateKey<Element> newPrivateKey) const
+		{
+			std::string errMsg = "LPAlgorithmSHESHIELD::KeySwitchGen is not implemented for the SHIELD Scheme.";
+			throw std::runtime_error(errMsg);
+		}
 
 		/**
 		* Method for KeySwitching based on a KeySwitchHint - uses the RLWE relinearization
@@ -420,7 +445,11 @@ namespace lbcrypto {
 		* @return cipherText decryptable by new private key.
 		*/
 		Ciphertext<Element> KeySwitch(const LPEvalKey<Element> keySwitchHint, 
-			const Ciphertext<Element> cipherText) const;
+			const Ciphertext<Element> cipherText) const
+		{
+			std::string errMsg = "LPAlgorithmSHESHIELD::KeySwitch is not implemented for the SHIELD Scheme.";
+			throw std::runtime_error(errMsg);
+		}
 
 		/**
 		* Method for KeySwitching based on NTRU key generation and RLWE relinearization. Not used for SHIELD.
@@ -466,7 +495,7 @@ namespace lbcrypto {
 		* @return resulting evalkeyswitch hint
 		*/
 		vector<LPEvalKey<Element>> EvalMultKeysGen(const LPPrivateKey<Element> originalPrivateKey) const {
-			std::string errMsg = "LPAlgorithmSHELTV::EvalMultKeysGen is not implemented for SHIELD SHE Scheme.";
+			std::string errMsg = "LPAlgorithmSHESHIELD::EvalMultKeysGen is not implemented for SHIELD SHE Scheme.";
 			throw std::runtime_error(errMsg);
 		}
 
@@ -480,7 +509,11 @@ namespace lbcrypto {
 		* @return resulting ciphertext
 		*/
 		Ciphertext<Element> EvalAutomorphism(const Ciphertext<Element> ciphertext, usint i,
-			const std::map<usint,LPEvalKey<Element>> &evalKeys) const;
+			const std::map<usint,LPEvalKey<Element>> &evalKeys) const
+		{
+			std::string errMsg = "LPAlgorithmSHESHIELD::EvalAutomorphism is not implemented for the SHIELD Scheme.";
+			throw std::runtime_error(errMsg);
+		}
 
 
 		/**
@@ -491,7 +524,11 @@ namespace lbcrypto {
 		* @return returns the evaluation keys
 		*/
 		shared_ptr<std::map<usint,LPEvalKey<Element>>> EvalAutomorphismKeyGen(const LPPrivateKey<Element> privateKey,
-			const std::vector<usint> &indexList) const;
+			const std::vector<usint> &indexList) const
+		{
+			std::string errMsg = "LPAlgorithmSHESHIELD::EvalAutomorphismKeyGen is not implemented for the SHIELD Scheme.";
+			throw std::runtime_error(errMsg);
+		}
 
 		/**
 		* Generate automophism keys for a given private key; Uses the public key for encryption
@@ -542,7 +579,11 @@ namespace lbcrypto {
 		* @return evalKey the evaluation key for switching the ciphertext to be decryptable by new private key.
 		*/
 		LPEvalKey<Element> ReKeyGen(const LPPrivateKey<Element> newKey,
-			const LPPrivateKey<Element> origPrivateKey) const;
+			const LPPrivateKey<Element> origPrivateKey) const
+		{
+			std::string errMsg = "LPAlgorithmPRESHIELD::ReKeyGen is not implemented for the SHIELD Scheme.";
+			throw std::runtime_error(errMsg);
+		}
 
 		/**
 		* Function to generate a re-encryption key as 1..log(q) encryptions for each bit of the original private key
@@ -566,7 +607,11 @@ namespace lbcrypto {
 		* @return resulting ciphertext after the re-encryption operation.
 		*/
 		Ciphertext<Element> ReEncrypt(const LPEvalKey<Element> evalKey,
-			const Ciphertext<Element> ciphertext) const;
+			const Ciphertext<Element> ciphertext) const
+		{
+			std::string errMsg = "LPAlgorithmPRESHIELD::ReEncrypt is not implemented for the SHIELD Scheme.";
+			throw std::runtime_error(errMsg);
+		}
 
 	};
 
@@ -598,7 +643,7 @@ namespace lbcrypto {
 			const LPPublicKey<Element> pk1,
 			bool makeSparse=false,
 			bool pre=false) {
-			std::string errMsg = "LPAlgorithmPRELTV::MultipartyKeyGen using the new secret key is not implemented for the LTV Scheme.";
+			std::string errMsg = "LPAlgorithmMultipartySHIELD::MultipartyKeyGen using the new secret key is not implemented for the SHIELD Scheme.";
 			throw std::runtime_error(errMsg);
 		}
 		
@@ -611,7 +656,7 @@ namespace lbcrypto {
 		LPKeyPair<Element> MultipartyKeyGen(CryptoContext<Element> cc,
 			const vector<LPPrivateKey<Element>>& secretKeys,
 			bool makeSparse=false) {
-			std::string errMsg = "LPAlgorithmPRELTV::MultipartyKeyGen using the new secret key is not implemented for the LTV Scheme.";
+			std::string errMsg = "LPAlgorithmMultipartySHIELD::MultipartyKeyGen using the new secret key is not implemented for the SHIELD Scheme.";
 			throw std::runtime_error(errMsg);
 		}
 
@@ -622,7 +667,11 @@ namespace lbcrypto {
 		 * @param ciphertext ciphertext id decrypted.
 		 */
 		Ciphertext<Element> MultipartyDecryptMain(const LPPrivateKey<Element> privateKey,
-			const Ciphertext<Element> ciphertext) const;
+			const Ciphertext<Element> ciphertext) const
+		{
+			std::string errMsg = "LPAlgorithmMultipartySHIELD::MultipartyDecryptMain using the new secret key is not implemented for the SHIELD Scheme.";
+			throw std::runtime_error(errMsg);
+		}
 
 		/**
 		 * Method for decryption operation run by the lead decryption client for multiparty homomorphic encryption
@@ -631,7 +680,11 @@ namespace lbcrypto {
 		 * @param ciphertext ciphertext id decrypted.
 		 */
 		Ciphertext<Element> MultipartyDecryptLead(const LPPrivateKey<Element> privateKey,
-			const Ciphertext<Element> ciphertext) const;
+			const Ciphertext<Element> ciphertext) const
+		{
+			std::string errMsg = "LPAlgorithmMultipartySHIELD::MultipartyDecryptLead using the new secret key is not implemented for the SHIELD Scheme.";
+			throw std::runtime_error(errMsg);
+		}
 
 		/**
 		 * Method for fusing the partially decrypted ciphertext.
@@ -641,7 +694,11 @@ namespace lbcrypto {
 		 * @return the decoding result.
 		 */
 		DecryptResult MultipartyDecryptFusion(const vector<Ciphertext<Element>>& ciphertextVec,
-			NativePoly *plaintext) const;
+			NativePoly *plaintext) const
+		{
+			std::string errMsg = "LPAlgorithmMultipartySHIELD::MultipartyDecryptFusion using the new secret key is not implemented for the SHIELD Scheme.";
+			throw std::runtime_error(errMsg);
+		}
 	};
 
 
@@ -668,7 +725,11 @@ namespace lbcrypto {
 		* @param cipherText is the ciphertext to perform modreduce on.
 		* @return ciphertext after the modulus reduction performed.
 		*/
-		virtual Ciphertext<Element> ModReduce(Ciphertext<Element> cipherText) const;
+		virtual Ciphertext<Element> ModReduce(Ciphertext<Element> cipherText) const
+		{
+			std::string errMsg = "LPLeveledSHEAlgorithmSHIELD::ModReduce using the new secret key is not implemented for the SHIELD Scheme.";
+			throw std::runtime_error(errMsg);
+		}
 
 		/**
 		* Method for RingReducing CipherText. Not implemented for the SHIELD scheme.
@@ -678,7 +739,7 @@ namespace lbcrypto {
 		*/
 		virtual Ciphertext<Element> RingReduce(Ciphertext<Element> cipherText, const LPEvalKey<Element> keySwitchHint) const {
 
-			std::string errMsg = "LPAlgorithmSHESHIELD::RindReduce is not currently implemented for the SHIELD Scheme.";
+			std::string errMsg = "LPLeveledSHEAlgorithmSHIELD::RindReduce is not currently implemented for the SHIELD Scheme.";
 			throw std::runtime_error(errMsg);
 		}
 
@@ -695,7 +756,7 @@ namespace lbcrypto {
 			const Ciphertext<Element> cipherText2,
 			const LPEvalKey<Element> quadKeySwitchHint) const
 		{
-			std::string errMsg = "LPAlgorithmSHESHIELD::ComposedEvalMult is not currently implemented for the SHIELD Scheme.";
+			std::string errMsg = "LPLeveledSHEAlgorithmSHIELD::ComposedEvalMult is not currently implemented for the SHIELD Scheme.";
 			throw std::runtime_error(errMsg);
 		}
 
@@ -710,7 +771,7 @@ namespace lbcrypto {
 		virtual Ciphertext<Element> LevelReduce(const Ciphertext<Element> cipherText1,
 			const LPEvalKey<Element> linearKeySwitchHint) const 
 		{
-			std::string errMsg = "LPAlgorithmSHESHIELD::LevelReduce is not currently implemented for the SHIELD Scheme.";
+			std::string errMsg = "LPLeveledSHEAlgorithmSHIELD::LevelReduce is not currently implemented for the SHIELD Scheme.";
 			throw std::runtime_error(errMsg);
 		}
 
