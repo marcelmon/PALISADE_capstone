@@ -8,8 +8,6 @@
 #include "palisade.h"
 #include "cryptocontexthelper.h"
 #include "cryptocontextgen.h"
-#include "encoding/byteplaintextencoding.h"
-#include "encoding/signedintplaintextencoding.h"
 #include "utils/debug.h"
 #include "utils/serializablehelper.h"
 
@@ -41,10 +39,11 @@ typedef Poly PolyType;
 
 
 
-vector<shared_ptr<Ciphertext<PolyType>>> ctext0;
-vector<shared_ptr<Ciphertext<PolyType>>> ctext1;
+Ciphertext<PolyType> ctext0;
+Ciphertext<PolyType> ctext1;
 
-
+Plaintext encodedValueOne;
+Plaintext encodedValueZero;
 
 
 vector<uint32_t> convertToBits(uint32_t x) {
@@ -75,14 +74,13 @@ vector<uint32_t> convertToBits(uint32_t x) {
 
 
 void decryptAndPrint(
-	shared_ptr<CryptoContext<PolyType>> cc,
-	shared_ptr<Ciphertext<PolyType>> CTextVal,
+	CryptoContext<PolyType> cc,
+	Ciphertext<PolyType> CTextVal,
 	LPKeyPair<PolyType> keyPair
 	){
-	vector<shared_ptr<Ciphertext<PolyType>>> ctextVector = vector<shared_ptr<Ciphertext<PolyType>>>();
-	ctextVector.push_back(CTextVal);
-	IntPlaintextEncoding ptVal;
-	cc->Decrypt(keyPair.secretKey, ctextVector, &ptVal, true);
+
+	Plaintext ptVal;
+	cc->Decrypt(keyPair.secretKey, CTextVal, &ptVal);
 	// cout << "PTVAL:" << ptVal.EvalToInt(1024) << endl;
 }
 
@@ -90,7 +88,8 @@ void decryptAndPrint(
 
 
 
-vector<vector<shared_ptr<Ciphertext<PolyType>>>> encryptBitwise(shared_ptr<CryptoContext<PolyType>> cc,
+
+vector<Ciphertext<PolyType>> encryptBitwise(CryptoContext<PolyType> cc,
 	uint32_t val,
 	LPKeyPair<PolyType> keyPair
 	){
@@ -99,18 +98,16 @@ vector<vector<shared_ptr<Ciphertext<PolyType>>>> encryptBitwise(shared_ptr<Crypt
 
 	std::vector<uint32_t> bitwisePlaintext = convertToBits(val);
 
-	vector<vector<shared_ptr<Ciphertext<PolyType>>>> thisBitwiseCtext = vector<vector<shared_ptr<Ciphertext<PolyType>>>>();
+	vector<Ciphertext<PolyType>> thisBitwiseCtext = vector<Ciphertext<PolyType>>();
 	for (unsigned int i = 0; i < bitwisePlaintext.size(); ++i)
 	{
 		// use new encryption for different noise
 		if(bitwisePlaintext.at(i) == 1){
-			IntPlaintextEncoding encodedValue = IntPlaintextEncoding(1);
-			vector<shared_ptr<Ciphertext<PolyType>>> ciphertextValue = cc->Encrypt(keyPair.publicKey, encodedValue, true);
+			Ciphertext<PolyType> ciphertextValue = cc->Encrypt(keyPair.publicKey, encodedValueOne);
 			thisBitwiseCtext.push_back(ciphertextValue);
 		}
 		else{
-			IntPlaintextEncoding encodedValue = IntPlaintextEncoding(0);
-			vector<shared_ptr<Ciphertext<PolyType>>> ciphertextValue = cc->Encrypt(keyPair.publicKey, encodedValue, true);
+			Ciphertext<PolyType> ciphertextValue = cc->Encrypt(keyPair.publicKey, encodedValueZero);
 			thisBitwiseCtext.push_back(ciphertextValue);
 		}
 	}
@@ -119,10 +116,10 @@ vector<vector<shared_ptr<Ciphertext<PolyType>>>> encryptBitwise(shared_ptr<Crypt
 }
 
 
-shared_ptr<Ciphertext<PolyType>> bitwiseCompareQuery(shared_ptr<CryptoContext<PolyType>> cc, 
-	vector<vector<shared_ptr<Ciphertext<PolyType>>>> val1, 
-	vector<vector<shared_ptr<Ciphertext<PolyType>>>> val2,
-	vector<shared_ptr<Ciphertext<PolyType>>> extractValue,
+Ciphertext<PolyType> bitwiseCompareQuery(CryptoContext<PolyType> cc, 
+	vector<Ciphertext<PolyType>> val1, 
+	vector<Ciphertext<PolyType>> val2,
+	Ciphertext<PolyType> extractValue,
 	LPKeyPair<PolyType> keyPair
 	){
 
@@ -140,7 +137,7 @@ shared_ptr<Ciphertext<PolyType>> bitwiseCompareQuery(shared_ptr<CryptoContext<Po
 	}
 
 
-	shared_ptr<Ciphertext<PolyType>> xnorResult = ctext1.at(0);
+	Ciphertext<PolyType> xnorResult = ctext1;
 
 	for (unsigned int i = 0; i < val1.size(); ++i)
 	{
@@ -155,16 +152,16 @@ shared_ptr<Ciphertext<PolyType>> bitwiseCompareQuery(shared_ptr<CryptoContext<Po
 		// A' = A - 1
 		// B' = B - 1
 		// cout << "run opps in compare" << endl;
-		shared_ptr<Ciphertext<PolyType>> val1Bit = val1.at(i).at(0);
-		shared_ptr<Ciphertext<PolyType>> val1BitMinus1 = cc->EvalSub(val1Bit, ctext1.at(0));
+		Ciphertext<PolyType> val1Bit = val1.at(i);
+		Ciphertext<PolyType> val1BitMinus1 = cc->EvalSub(val1Bit, ctext1);
 
 		// cout << "val 1 bit : ";
 		// decryptAndPrint(cc, val1Bit, keyPair);
 		// cout << "val 1 bit minus 1 : ";
 		// decryptAndPrint(cc, val1BitMinus1, keyPair);
 
-		shared_ptr<Ciphertext<PolyType>> val2Bit = val2.at(i).at(0);
-		shared_ptr<Ciphertext<PolyType>> val2BitMinus1 = cc->EvalSub(val2Bit, ctext1.at(0));
+		Ciphertext<PolyType> val2Bit = val2.at(i);
+		Ciphertext<PolyType> val2BitMinus1 = cc->EvalSub(val2Bit, ctext1);
 
 		// cout << "val 2 bit : ";
 		// decryptAndPrint(cc, val2Bit, keyPair);
@@ -172,10 +169,10 @@ shared_ptr<Ciphertext<PolyType>> bitwiseCompareQuery(shared_ptr<CryptoContext<Po
 		// decryptAndPrint(cc, val2BitMinus1, keyPair);
 
 
-		shared_ptr<Ciphertext<PolyType>> xnorLeftResult = cc->EvalMult(val1Bit, val2Bit);
-		shared_ptr<Ciphertext<PolyType>> xnorrightResult = cc->EvalMult(val1BitMinus1, val2BitMinus1);
+		Ciphertext<PolyType> xnorLeftResult = cc->EvalMult(val1Bit, val2Bit);
+		Ciphertext<PolyType> xnorrightResult = cc->EvalMult(val1BitMinus1, val2BitMinus1);
 
-		shared_ptr<Ciphertext<PolyType>> xnorResultBoth = cc->EvalAdd(xnorLeftResult, xnorrightResult);
+		Ciphertext<PolyType> xnorResultBoth = cc->EvalAdd(xnorLeftResult, xnorrightResult);
 
 		xnorResult = cc->EvalMult(xnorResult, xnorResultBoth);
 	}
@@ -183,7 +180,7 @@ shared_ptr<Ciphertext<PolyType>> bitwiseCompareQuery(shared_ptr<CryptoContext<Po
 	// cout << "VAL1 BITS : ";
 	for (unsigned int i = 0; i < val1.size(); ++i)
 	{
-		decryptAndPrint(cc, val1.at(i).at(0), keyPair);
+		decryptAndPrint(cc, val1.at(i), keyPair);
 	}
 	// cout << endl << endl;
 
@@ -191,7 +188,7 @@ shared_ptr<Ciphertext<PolyType>> bitwiseCompareQuery(shared_ptr<CryptoContext<Po
 	// cout << "VAL2 BITS : ";
 	for (unsigned int i = 0; i < val2.size(); ++i)
 	{
-		decryptAndPrint(cc, val2.at(i).at(0), keyPair);
+		decryptAndPrint(cc, val2.at(i), keyPair);
 	}
 	// cout << endl << endl;
 
@@ -200,7 +197,7 @@ shared_ptr<Ciphertext<PolyType>> bitwiseCompareQuery(shared_ptr<CryptoContext<Po
 	// decryptAndPrint(cc, extractValue.at(0), keyPair);
 	// cout << endl;
 
-	shared_ptr<Ciphertext<PolyType>> res =  cc->EvalMult(xnorResult, extractValue.at(0));
+	Ciphertext<PolyType> res =  cc->EvalMult(xnorResult, extractValue);
 	
 	// cout << "RES : ";
 	decryptAndPrint(cc, res, keyPair);
@@ -260,11 +257,13 @@ int main(int argc, char *argv[]) {
 
 	// vector<uint32_t> inputValues = {2,3};
 
-	shared_ptr<CryptoContext<PolyType>> cc;
+	CryptoContext<PolyType> cc;
 
-	vector<shared_ptr<Ciphertext<PolyType>>> encrpytedValues = vector<shared_ptr<Ciphertext<PolyType>>>();
+	vector<Ciphertext<PolyType>> encrpytedValues = vector<Ciphertext<PolyType>>();
 
 	int plaintextModulus;
+
+
 
 	try {
 
@@ -353,48 +352,51 @@ int main(int argc, char *argv[]) {
 		cc->EvalMultKeyGen(keyPair.secretKey);
 
 
+		encodedValueZero = cc->MakeIntegerPlaintext(0);
+		ctext0 = cc->Encrypt(keyPair.publicKey, encodedValueZero);
 
 
-		IntPlaintextEncoding encodedValueZero = IntPlaintextEncoding(0);
-		ctext0 = cc->Encrypt(keyPair.publicKey, encodedValueZero, true);
-
-
-		IntPlaintextEncoding encodedValueOne = IntPlaintextEncoding(1);
-		ctext1 = cc->Encrypt(keyPair.publicKey, encodedValueOne, true);
+		encodedValueOne = cc->MakeIntegerPlaintext(1);
+		ctext1 = cc->Encrypt(keyPair.publicKey, encodedValueOne);
 
 
 
 
 		// cout << "total result inst." << endl;
-		std::vector<uint32_t> zeroVal = vector<uint32_t>();
-		zeroVal.push_back(0);
-		IntPlaintextEncoding encodedZeroValue = IntPlaintextEncoding(zeroVal);
-		vector<shared_ptr<Ciphertext<PolyType>>> totalResultVect = cc->Encrypt(keyPair.publicKey, encodedZeroValue, true);
+		Ciphertext<PolyType> totalResult = cc->Encrypt(keyPair.publicKey, encodedValueZero);
 
-		shared_ptr<Ciphertext<PolyType>> totalResult = totalResultVect.at(0);
 		
 		cout << "Encrypting all key value pairs." << endl;
 
 		// cout << "enc bitwise ctext" << endl;
-		std::vector<vector<vector<shared_ptr<Ciphertext<PolyType>>>>> allBitwiseCtext = vector<vector<vector<shared_ptr<Ciphertext<PolyType>>>>>();
+		/*
+			each key is stored as a value of encrypted bits
+
+			vector<
+				vector<ctext_bit_1, ctext_bit_2,..>,
+				vector<ctext_bit_1, ctext_bit_2,..>,
+				vector<ctext_bit_1, ctext_bit_2,..>
+			>
+		*/
+		vector<vector<Ciphertext<PolyType>>> allBitwiseCtext = vector<vector<Ciphertext<PolyType>>>();
 		for (unsigned int i = 0; i < inputValues.size(); ++i)
 		{
 
-			cout << "Encrypting key from  key->value pair : ("<<inputValues.at(i) << " : " << extractValu.at(i) << ")" <<endl;
+			cout << "Encrypting key from  key->value pair : (" << inputValues.at(i) << " : " << extractValu.at(i) << ")" <<endl;
 
 			allBitwiseCtext.push_back(encryptBitwise(cc, inputValues.at(i), keyPair));
 		}
 
 
 		// cout << "enc vals to ctext" << endl;
-		vector<vector<shared_ptr<Ciphertext<PolyType>>>> allEncryptedValsToExtract = vector<vector<shared_ptr<Ciphertext<PolyType>>>>();
+		vector<Ciphertext<PolyType>> allEncryptedValsToExtract = vector<Ciphertext<PolyType>>();
 		for (unsigned int i = 0; i < extractValu.size(); ++i)
 		{
 
-			cout << "Encrypting value from  key->value pair : ("<<inputValues.at(i) << " : " << extractValu.at(i) << ")" <<endl;
+			cout << "Encrypting value from  key->value pair : (" << inputValues.at(i) << " : " << extractValu.at(i) << ")" <<endl;
 
-			IntPlaintextEncoding encodedValue = IntPlaintextEncoding(extractValu.at(i));
-			vector<shared_ptr<Ciphertext<PolyType>>> ciphertextValue = cc->Encrypt(keyPair.publicKey, encodedValue, true);
+			Plaintext encodedValue = cc->MakeIntegerPlaintext(extractValu.at(i));
+			Ciphertext<PolyType> ciphertextValue = cc->Encrypt(keyPair.publicKey, encodedValue);
 			allEncryptedValsToExtract.push_back(ciphertextValue);
 		}
 
@@ -402,8 +404,7 @@ int main(int argc, char *argv[]) {
 		cout << endl;
 		usleep(3000000);
 		cout << "Encrypting query key : " << queryVal << endl << endl;
-		std::vector<uint32_t> bitwiseQueryVal = convertToBits(queryVal);
-		vector<vector<shared_ptr<Ciphertext<PolyType>>>> bitwiseQueryValCText = encryptBitwise(cc, queryVal, keyPair);
+		vector<Ciphertext<PolyType>> bitwiseQueryValCText = encryptBitwise(cc, queryVal, keyPair);
 
 
 
@@ -412,7 +413,7 @@ int main(int argc, char *argv[]) {
 		{
 
 			cout << "Searching.." << endl;
-			shared_ptr<Ciphertext<PolyType>> queryResult = bitwiseCompareQuery(cc, allBitwiseCtext.at(i), bitwiseQueryValCText, allEncryptedValsToExtract.at(i), keyPair);
+			Ciphertext<PolyType> queryResult = bitwiseCompareQuery(cc, allBitwiseCtext.at(i), bitwiseQueryValCText, allEncryptedValsToExtract.at(i), keyPair);
 
 			// cout << "totalResult BEFORE ADD : " ;
 			// decryptAndPrint(cc, totalResult, keyPair);
@@ -428,15 +429,10 @@ int main(int argc, char *argv[]) {
 		}
 
 
+		Plaintext ptValue1;
+		cc->Decrypt(keyPair.secretKey, totalResult, &ptValue1);
 
-
-		vector<shared_ptr<Ciphertext<PolyType>>> ctextVectorResult1 = vector<shared_ptr<Ciphertext<PolyType>>>();
-		ctextVectorResult1.push_back(totalResult);
-
-		IntPlaintextEncoding ptValue1;
-		cc->Decrypt(keyPair.secretKey, ctextVectorResult1, &ptValue1, true);
-
-		cout << "Extracted database value : " << ptValue1.EvalToInt(plaintextModulus) << endl;
+		cout << "Extracted database value : " << ptValue1 << endl;
 
 		exit(1);
 

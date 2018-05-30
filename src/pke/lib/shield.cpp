@@ -122,7 +122,6 @@ namespace lbcrypto {
 		cout << "DIST PATTERN : 2 " << endl;
 		const typename Element::DggType &dggForError = cryptoParamsForError->GetDiscreteGaussianGenerator();
 
-
 		/*
 			Demonstrates how the integer types are stored
 		*/
@@ -270,7 +269,6 @@ namespace lbcrypto {
 		Element e(dggForError, elementParams, Format::COEFFICIENT);
 
 
-		
 		e.SwitchFormat(); // now EVALUATION
 
 		a.SwitchFormat(); // now EVALUATION
@@ -1264,7 +1262,11 @@ Ciphertext<Element> LPAlgorithmSHESHIELD<Element>::EvalSub(
 	template <class Element>
 	LPEvalKey<Element> LPAlgorithmSHESHIELD<Element>::EvalMultKeyGen(const LPPrivateKey<Element> originalPrivateKey) const
 	{
-		return NULL;
+
+
+		LPEvalKey<Element> keySwitchHintRelin(new LPEvalKeyRelinImpl<Element>(originalPrivateKey->GetCryptoContext()));
+
+		return keySwitchHintRelin;
 	}
 
 	template <class Element>
